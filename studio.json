@@ -1,0 +1,17 @@
+{
+    "version": 2,
+    "paths": [
+        "/Users/sarahkirkby/PhpstormProjects/studio/Boilers/NodeEntityBoiler",
+        "/Users/sarahkirkby/PhpstormProjects/studio/Boilers/RepositoryBoiler",
+        "/Users/sarahkirkby/PhpstormProjects/studio/Boilers/RestServerBoiler",
+        "/Users/sarahkirkby/PhpstormProjects/studio/Boilers/SchemaBoilers",
+
+        "/Users/sarahkirkby/PhpstormProjects/studio/Packages/DoctrineSchemas",
+        "/Users/sarahkirkby/PhpstormProjects/studio/Packages/DoctrineRepositories",
+        "/Users/sarahkirkby/PhpstormProjects/studio/Packages/DoctrineNodeEntity",
+        "/Users/sarahkirkby/PhpstormProjects/studio/Packages/IlluminateRequestPSR7Adapter",
+
+        "/Users/sarahkirkby/PhpstormProjects/studio/Components/LumenDoctrineComponent",
+        "/Users/sarahkirkby/PhpstormProjects/studio/Components/LumenRestServerComponent"
+    ]
+}

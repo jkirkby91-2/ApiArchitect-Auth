@@ -1,0 +1,35 @@
+{
+    "name": "ApiArchitect/Auth",
+    "description": "Auth For ApiArchitect.",
+    "keywords": ["Auth","ApiArchitect", "lumen"],
+    "license": "CC BY-NC-SA",
+    "type": "project",
+    "require": {
+        "php": ">=5.5.9",
+        "tymon/jwt-auth": "1.0.0-alpha.3",
+        "jkirkby91/SchemaBoilers": "dev-master",
+        "jkirkby91/NodeEntityBoiler": "dev-master",
+        "jkirkby91/RepositoryBoiler": "dev-master",
+        "jkirkby91/RestServerBoiler": "dev-master",
+        "jkirkby91/DoctrineSchemas": "dev-master",
+        "jkirkby91/DoctrineNodeEntity": "dev-master",
+        "jkirkby91/DoctrineRepositories": "dev-master",
+        "jkirkby91/LumenDoctrineComponent": "dev-master",
+        "jkirkby91/LumenRestServerComponent": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "fzaninotto/faker": "~1.4",
+        "jakubkratina/lumen-dingo-route-list": "^0.9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "ApiArchitect\\Auth\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ApiArchitect\\Auth\\Tests\\": "tests/"
+        }
+    }
+}
