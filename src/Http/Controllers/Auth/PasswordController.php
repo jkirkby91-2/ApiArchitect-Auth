@@ -9,7 +9,7 @@ class PasswordController extends RestController
 {
 
     use ResetsPasswords;
-    //@TODO
+    //@TODO reset passwords
 
     /**
      * PasswordController constructor.
