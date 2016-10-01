@@ -5,6 +5,11 @@ namespace ApiArchitect\Auth\Http\Middleware;
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 
+/**
+ * Class Authenticate
+ * @package ApiArchitect\Auth\Http\Middleware
+ * @TODO do we need this?
+ */
 class Authenticate
 {
 

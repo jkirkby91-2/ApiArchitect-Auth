@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\Guard;
 /**
  * Class RedirectIfAuthenticated
  * @package app\Middleware
+ * @TODO do we need this?
  */
 class RedirectIfAuthenticated
 {

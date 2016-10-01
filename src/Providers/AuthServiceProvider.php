@@ -4,7 +4,9 @@ namespace ApiArchitect\Auth\Providers;
 
 /**
  * Class AuthServiceProvider
+ *
  * @package ApiArchitect\Auth\Providers
+ * @author James Kirkby <jkirkby91@gmail.com>
  */
 class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -19,6 +21,18 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->registerServiceProviders();
         $this->registerRouteMiddleware();
         $this->registerController();
+
+        //inject password resets controller
+        $this->app->bind(\ApiArchitect\Auth\Http\Controllers\Auth\PasswordResetsController::class, function($app) {
+            return new \ApiArchitect\Auth\Http\Controllers\Auth\PasswordResetsController(
+                $app['em']->getRepository(\ApiArchitect\Auth\Entities\PasswordResets::class)
+            );
+        });
+
+        $this->app->bind(
+            '\Jkirkby91\Boilers\NodeEntityBoiler\EntityContract',
+            '\ApiArchitect\Auth\Entities\PasswordResets'
+        );
     }
 
     /**
@@ -26,10 +40,7 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
      *
      * @return void
      */
-    public function boot()
-    {
-
-    }
+    public function boot(){}
 
     /**
      * Register Routes
@@ -44,6 +55,7 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->app->register(\Jkirkby91\LumenDoctrineComponent\Providers\LumenDoctrineServiceProvider::class);
         $this->app->register(\Tymon\JWTAuth\Providers\LumenServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\DoctrineUserAdapterServiceProvider::class);
+        $this->app->register(\ApiArchitect\Auth\Providers\PasswordResetsRepositoryServiceProvider::class);
     }
 
     /**
@@ -54,11 +66,11 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->app->routeMiddleware([
             'jwt-auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         ]);
-
     }
 
     public function registerController()
     {
         $this->app->make('ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController');
+        $this->app->make('ApiArchitect\Auth\Http\Controllers\Auth\PasswordResetsController');
     }
 }

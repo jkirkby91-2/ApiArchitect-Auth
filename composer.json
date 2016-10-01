@@ -20,7 +20,8 @@
     "require-dev": {
         "phpunit/phpunit": "~4.0",
         "fzaninotto/faker": "~1.4",
-        "jakubkratina/lumen-dingo-route-list": "^0.9.5"
+        "jakubkratina/lumen-dingo-route-list": "^0.9.5",
+        "jkirkby91/illuminaterequestpsr7adapter": "dev-master"
     },
     "autoload": {
         "psr-4": {
