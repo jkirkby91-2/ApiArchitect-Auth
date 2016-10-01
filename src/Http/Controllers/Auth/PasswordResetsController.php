@@ -2,10 +2,11 @@
 
 namespace ApiArchitect\Auth\Http\Controllers\Auth;
 
+use Psr\Http\Message\ServerRequestInterface;
 use ApiArchitect\Auth\Entities\PasswordResets;
 use ApiArchitect\Auth\Libraries\PasswordReset;
-use Jkirkby91\LumenRestServerComponent\Http\Controllers\CrudController;
-use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
+use Jkirkby91\Boilers\RestServerBoiler\Exceptions\NotFoundHttpException;
 
 /**
  * Class PasswordController
@@ -13,33 +14,61 @@ use Psr\Http\Message\ServerRequestInterface;
  * @package ApiArchitect\Auth\Http\Controllers\Auth
  * @author James Kirkby <jkirkby91@gmail.com>
  */
-class PasswordResetsController extends CrudController
+class PasswordResetsController extends AuthenticateController
 {
 
     use PasswordReset;
 
     /**
      * @param ServerRequestInterface $request
+     * @return \Zend\Diactoros\Response\JsonResponse
      */
     public function reset(ServerRequestInterface $request)
     {
         $data = $request->getParsedBody();
 
-        $passwordReset = new PasswordResets($data['email'],$this->generateToken(),0);
+        $user = app()->make('em')->getRepository('\ApiArchitect\Compass\Entities\User')->findOneBy(['email' => $data['email']]);
 
-        //@TODO some try catch magic
-        $passwordReset = $this->repository->create($passwordReset);
+        //@TODO check email exists wrap this in condition logic
+        if(!is_null($user))
+        {
+            $passwordReset = new PasswordResets($user,$this->generateToken(),0);
 
-        return $this->showResponse(['If a matching account was found an email was sent to '.$data['email'].' to allow you to reset your password.']);
+            //@TODO some try catch magic
+            $passwordReset = app()->make('em')->getRepository('\ApiArchitect\Auth\Entities\PasswordResets')->create($passwordReset);
+        }
+
+        return $this->showResponse(["If a matching account was found an email was sent to ".$data['email']." to allow you to reset your password."]);
     }
 
     /**
      * @param $token
+     * @return \Zend\Diactoros\Response\JsonResponse
      */
     public function verify($token)
     {
-        $passwordResetEntity = $this->repository->read($token);
+        $passwordResetEntity = app()->make('em')->getRepository('\ApiArchitect\Auth\Entities\PasswordResets')->findOneBy(['token' => $token,'used' => 0]);
 
-        dd($passwordResetEntity);
+        if(is_null($passwordResetEntity))
+        {
+            throw new NotFoundHttpException;
+        }
+
+        if($passwordResetEntity->getUsed() === true)
+        {
+            throw new AccessDeniedException;
+        }
+
+        $passwordResetEntity = $passwordResetEntity->setUsed(1);
+
+        $passwordResetEntity = app()->make('em')->getRepository('\ApiArchitect\Auth\Entities\PasswordResets')->update($passwordResetEntity);
+
+        $itemResource = fractal()
+            ->item($this->auth->fromUser($passwordResetEntity->getUser()))
+            ->transformWith(new \ApiArchitect\Auth\Http\Transformers\AuthTokenTransformer())
+            ->serializeWith(new \Spatie\Fractal\ArraySerializer())
+            ->toArray();
+
+        return $this->showResponse($itemResource);
     }
 }

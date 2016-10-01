@@ -22,13 +22,8 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->registerRouteMiddleware();
         $this->registerController();
 
-        //inject password resets controller
-        $this->app->bind(\ApiArchitect\Auth\Http\Controllers\Auth\PasswordResetsController::class, function($app) {
-            return new \ApiArchitect\Auth\Http\Controllers\Auth\PasswordResetsController(
-                $app['em']->getRepository(\ApiArchitect\Auth\Entities\PasswordResets::class)
-            );
-        });
 
+        //bind password entity to entity contract implementation
         $this->app->bind(
             '\Jkirkby91\Boilers\NodeEntityBoiler\EntityContract',
             '\ApiArchitect\Auth\Entities\PasswordResets'
@@ -70,7 +65,7 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function registerController()
     {
-        $this->app->make('ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController');
-        $this->app->make('ApiArchitect\Auth\Http\Controllers\Auth\PasswordResetsController');
+//        $this->app->make('ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController');
+//        $this->app->make('ApiArchitect\Auth\Http\Controllers\Auth\PasswordResetsController');
     }
 }

@@ -21,9 +21,9 @@ class PasswordResets extends \Jkirkby91\LumenDoctrineComponent\Entities\LumenDoc
 
     /**
      * @var
-     * @ORM\Column(type="string", length=45, nullable=true)
+     * @ORM\OneToOne(targetEntity="\ApiArchitect\Compass\Entities\User")
      */
-    protected $email;
+    protected $user;
 
     /**
      * @var
@@ -40,31 +40,32 @@ class PasswordResets extends \Jkirkby91\LumenDoctrineComponent\Entities\LumenDoc
     /**
      * PasswordResets constructor.
      *
-     * @param $email
+     * @param $user
      * @param $token
      */
-    public function __construct($email, $token)
+    public function __construct($user, $token, $used)
     {
-        $this->email    = $email;
+        $this->user     = $user;
         $this->token    = $token;
+        $this->used     = $used;
         $this->nodeType = 'PasswordReset';
     }
 
     /**
      * @return mixed
      */
-    public function getEmail()
+    public function getUser()
     {
-        return $this->email;
+        return $this->user;
     }
 
     /**
-     * @param mixed $email
+     * @param mixed $user
      * @return PasswordResets
      */
-    public function setEmail($email)
+    public function setUser($user)
     {
-        $this->email = $email;
+        $this->user = $user;
         return $this;
     }
 

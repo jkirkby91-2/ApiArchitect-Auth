@@ -65,7 +65,7 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
 
 //        $this->validate($request, [
 //            'token' => 'required'
-//        ]);
+//        ]);@TODO validate request
 
         $this->token = $request->getParsedBody();
 
