@@ -1,5 +1,5 @@
 {
-    "name": "ApiArchitect/Auth",
+    "name": "apiarchitect/auth",
     "description": "Auth For ApiArchitect.",
     "keywords": ["Auth","ApiArchitect", "lumen"],
     "license": "CC BY-NC-SA",
