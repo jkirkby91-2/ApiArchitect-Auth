@@ -61,6 +61,10 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->app->routeMiddleware([
             'jwt-auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         ]);
+
+        $this->app->middleware([
+            \ApiArchitect\Auth\Http\Middleware\ApiArchitectAuthMiddleware::class
+        ]);
     }
 
     public function registerController()

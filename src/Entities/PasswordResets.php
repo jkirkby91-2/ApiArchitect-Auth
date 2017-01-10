@@ -14,14 +14,13 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="password_resets", indexes={@ORM\Index(name="token_idx", columns={"token"})})
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\PasswordResetsRepository")
  * @ORM\HasLifeCycleCallBacks
- * @TODO hit the post flush lifecycle event and push the object to email queue
  */
 class PasswordResets extends \Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity
 {
 
     /**
      * @var
-     * @ORM\OneToOne(targetEntity="\ApiArchitect\Compass\Entities\User")
+     * @ORM\ManyToOne(targetEntity="\ApiArchitect\Compass\Entities\User")
      */
     protected $user;
 

@@ -3,6 +3,7 @@
 namespace ApiArchitect\Auth\Adapters;
 
 use ApiArchitect\Compass\Entities\User;
+use Doctrine\ORM\EntityNotFoundException;
 use Illuminate\Hashing\BcryptHasher;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 use LaravelDoctrine\ORM\Auth\DoctrineUserProvider;
@@ -13,7 +14,7 @@ use LaravelDoctrine\ORM\Auth\DoctrineUserProvider;
  * Authentication driver for JWT Auth
  *
  * @package app\Providers\User
- * @author James Kirkby <me@jameskirkby.com>
+ * @author James Kirkby <jkirkby91@gmail.com>
  */
 class DoctrineUserAdapter implements Auth
 {
@@ -40,7 +41,7 @@ class DoctrineUserAdapter implements Auth
 
     /**
      * @param array $credentials
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     * @return bool|\Illuminate\Contracts\Auth\Authenticatable|null
      */
     public function byCredentials(array $credentials)
     {
@@ -48,14 +49,16 @@ class DoctrineUserAdapter implements Auth
         $authTarget = $this->doctrineUserAdapter->retrieveByCredentials($credentials);
 
         //check we actually have a user returned
-        $this->ifFound($authTarget);
+        $this->ifFound($this->doctrineUserAdapter->retrieveByCredentials($credentials));
+
+        $x = $this->doctrineUserAdapter->validateCredentials($authTarget,$credentials);
 
         //validate found user
         if($this->doctrineUserAdapter->validateCredentials($authTarget,$credentials) === true){
             $this->auth = $authTarget;
             return $this->auth;
         } else {
-            throw new \Jkirkby91\Boilers\RestServerBoiler\Exceptions\UnauthorizedHttpException();
+            return false;
         }
     }
 
@@ -65,9 +68,7 @@ class DoctrineUserAdapter implements Auth
      */
     public function byId($id)
     {
-
         return $this->ifFound($this->doctrineUserAdapter->retrieveById($id));
-
     }
 
     /**
@@ -83,12 +84,13 @@ class DoctrineUserAdapter implements Auth
      *
      * @param $object
      * @return mixed
+     * @throws EntityNotFoundException
      */
     private function ifFound($object)
     {
         if(is_null($object))
         {
-            throw new \Jkirkby91\Boilers\RestServerBoiler\Exceptions\NotFoundHttpException('User Not Found');
+            throw new EntityNotFoundException();
         } else {
             return $object;
         }

@@ -1,17 +1,20 @@
 {
     "version": 2,
     "paths": [
-        "/Users/sarahkirkby/PhpstormProjects/studio/Boilers/NodeEntityBoiler",
-        "/Users/sarahkirkby/PhpstormProjects/studio/Boilers/RepositoryBoiler",
-        "/Users/sarahkirkby/PhpstormProjects/studio/Boilers/RestServerBoiler",
-        "/Users/sarahkirkby/PhpstormProjects/studio/Boilers/SchemaBoilers",
-
-        "/Users/sarahkirkby/PhpstormProjects/studio/Packages/DoctrineSchemas",
-        "/Users/sarahkirkby/PhpstormProjects/studio/Packages/DoctrineRepositories",
-        "/Users/sarahkirkby/PhpstormProjects/studio/Packages/DoctrineNodeEntity",
-        "/Users/sarahkirkby/PhpstormProjects/studio/Packages/IlluminateRequestPSR7Adapter",
-
-        "/Users/sarahkirkby/PhpstormProjects/studio/Components/LumenDoctrineComponent",
-        "/Users/sarahkirkby/PhpstormProjects/studio/Components/LumenRestServerComponent"
+        "/home/nsh/Documents/PhpstormProjects/studio/Boilers/NodeEntityBoiler",
+        "/home/nsh/Documents/PhpstormProjects/studio/Boilers/RepositoryBoiler",
+        "/home/nsh/Documents/PhpstormProjects/studio/Boilers/RestServerBoiler",
+        "/home/nsh/Documents/PhpstormProjects/studio/Boilers/SchemaBoilers",
+        "/home/nsh/Documents/PhpstormProjects/studio/Packages/DoctrineSchemas",
+        "/home/nsh/Documents/PhpstormProjects/studio/Packages/DoctrineRepositories",
+        "/home/nsh/Documents/PhpstormProjects/studio/Packages/DoctrineNodeEntity",
+        "/home/nsh/Documents/PhpstormProjects/studio/Packages/IlluminateRequestPSR7Adapter",
+        "/home/nsh/Documents/PhpstormProjects/studio/Packages/LumenPSR7Cors",
+        "/home/nsh/Documents/PhpstormProjects/studio/Components/LumenDoctrineComponent",
+        "/home/nsh/Documents/PhpstormProjects/studio/Components/LumenRestServerComponent",
+        "/home/nsh/Documents/PhpstormProjects/studio/ApiArchitect/Log",
+        "/home/nsh/Documents/PhpstormProjects/studio/ApiArchitect/auth",
+        "/home/nsh/Documents/PhpstormProjects/studio/ApiArchitect/Compass",
+        "studio.json"
     ]
 }

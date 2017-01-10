@@ -15,7 +15,7 @@ class AuthTokenTransformer extends TransformerAbstract implements TransformerCon
     public function transform($token)
     {
         return [
-            'bearer' => $token
+            'token' => $token
         ];
     }
 }

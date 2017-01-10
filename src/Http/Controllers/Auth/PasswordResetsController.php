@@ -38,7 +38,9 @@ class PasswordResetsController extends AuthenticateController
             $passwordReset = app()->make('em')->getRepository('\ApiArchitect\Auth\Entities\PasswordResets')->create($passwordReset);
         }
 
-        return $this->showResponse(["If a matching account was found an email was sent to ".$data['email']." to allow you to reset your password."]);
+        //@TODO push password reset email to an email queue
+
+        return $this->showResponse(array("If a matching account was found an email was sent to ".$data['email']." to allow you to reset your password."));
     }
 
     /**

@@ -18,4 +18,9 @@ trait PasswordReset
     {
         return str_random($length);
     }
+
+    /**
+     * @TODO implement
+     */
+    public function buildPasswordResetEmailObject(){}
 }

@@ -2,6 +2,7 @@
 
 namespace ApiArchitect\Auth\Http\Controllers\Auth;
 
+use Doctrine\ORM\EntityNotFoundException;
 use Tymon\JWTAuth\JWTAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -10,6 +11,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
  * Class AuthenticateController
  *
  * @package app\Http\Controllers
+ * @author James Kirkby <jkirkby91@gmail.com>
  */
 class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController implements \ApiArchitect\Auth\Contracts\JWTAuthControllerContract
 {
@@ -41,38 +43,34 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
     {
         try {
             if (! $this->token = $this->auth->attempt($request->getParsedBody())) {
-                throw new \Jkirkby91\Boilers\RestServerBoiler\Exceptions\UnauthorizedHttpException;
+                return $this->UnauthorizedResponse();
             }
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-            throw new \Jkirkby91\Boilers\RestServerBoiler\Exceptions\UnprocessableEntityException;
+            return $this->clientErrorResponse();
+        } catch (EntityNotFoundException $e) {
+            return $this->notFoundResponse();
         }
 
-        $itemResource = fractal()
+        return $this->showResponse(fractal()
             ->item($this->token)
             ->transformWith(new \ApiArchitect\Auth\Http\Transformers\AuthTokenTransformer())
             ->serializeWith(new \Spatie\Fractal\ArraySerializer())
-            ->toArray();
-
-        return $this->showResponse($itemResource);
+            ->toArray()
+        );
     }
 
     /**
      * @param ServerRequestInterface $request
-     * @return bool
+     * @return bool|\Zend\Diactoros\Response\JsonResponse
      */
     public function logout(ServerRequestInterface $request)
     {
-
-//        $this->validate($request, [
-//            'token' => 'required'
-//        ]);@TODO validate request
-
         $this->token = $request->getParsedBody();
 
         try {
             $resource = $this->auth->invalidate();
         } catch (JWTException $e) {
-            throw new \Jkirkby91\Boilers\RestServerBoiler\Exceptions\UnprocessableEntityException;
+            return $this->clientErrorResponse();
         }
         return $resource;
     }
@@ -95,8 +93,7 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return response()->json(['token_absent'], $e->getStatusCode());
         }
-        // the token is valid and we have found the user via the sub claim
-        return response()->json(compact('user'));
+        return $this->showResponse($user);
     }
 
     /**
@@ -115,6 +112,31 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return $this->response->errorInternal('Not able to refresh Token');
         }
-        return $this->response->withArray(['token' => $refreshedToken]);
+        return $this->createdResponse(['token' => $refreshedToken]);
+    }
+
+    /**
+     * @return \Zend\Diactoros\Response\JsonResponse
+     */
+    public function user()
+    {
+        $itemResource = fractal()
+            ->item(app()
+                ->make('em')
+                ->getRepository('\ApiArchitect\Compass\Entities\User')
+                ->find($this->auth->getPayload()->get('sub'))
+            )
+            ->transformWith(new \ApiArchitect\Compass\Http\Transformers\UserTransformer())
+            ->serializeWith(new \Spatie\Fractal\ArraySerializer());
+
+        return $this->showResponse($itemResource);
+    }
+
+    /**
+     * @return \Zend\Diactoros\Response\JsonResponse
+     */
+    public function refresh()
+    {
+        return $this->showResponse(['success']);
     }
 }
