@@ -139,4 +139,6 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
     {
         return $this->showResponse(['success']);
     }
+
+    public function update()
 }
