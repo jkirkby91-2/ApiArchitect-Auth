@@ -4,7 +4,7 @@ namespace ApiArchitect\Auth\Entities;
 
 use Doctrine\ORM\Mapping AS ORM;
 use Gedmo\Mapping\Annotation AS Gedmo;
-use LaravelDoctrine\ACL\Contracts\Role AS RoleContract
+use LaravelDoctrine\ACL\Contracts\Role AS RoleContract;
 
 /**
  * Class Role
