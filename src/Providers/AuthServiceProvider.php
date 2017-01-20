@@ -20,8 +20,6 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->registerRoutes();
         $this->registerServiceProviders();
         $this->registerRouteMiddleware();
-        $this->registerController();
-
 
         //bind password entity to entity contract implementation
         $this->app->bind(
