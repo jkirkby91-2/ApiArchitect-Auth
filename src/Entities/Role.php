@@ -2,8 +2,9 @@
 
 namespace ApiArchitect\Auth\Entities;
 
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use Doctrine\ORM\Mapping AS ORM;
+use Gedmo\Mapping\Annotation AS Gedmo;
+use LaravelDoctrine\ACL\Contracts\Role AS RoleContract
 
 /**
  * Class Role
@@ -15,15 +16,16 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table(name="role", indexes={@ORM\Index(name="name_idx", columns={"name"})})
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\RoleRepository")
  */
-class Role extends \Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity implements \LaravelDoctrine\ACL\Contracts\Role
+class Role extends \Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity implements RoleContract
 {
 
     /**
      * Role constructor.
      */
-    public function __construct()
+    public function __construct($name)
     {
         $this->nodeType = 'Role';
+        $this->name = $name;
     }
 
     /**
@@ -33,50 +35,6 @@ class Role extends \Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntit
      * @ORM\Column(type="string", length=45, nullable=true)
      */
     protected $name;
-
-    /**
-     * @Gedmo\Versioned
-     * @Gedmo\Blameable(on="create")
-     * @Gedmo\IpTraceable(on="create")
-     * @ORM\Column(type="string", length=45, nullable=true)
-     */
-    protected $permission;
-
-    /**
-     * @return mixed
-     */
-    public function getPermissions()
-    {
-        return $this->permission;
-    }
-
-    /**
-     * @param string $permission
-     * @return $this
-     */
-    public function hasPermissionTo($permission)
-    {
-        $this->permission = $permission;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPermission()
-    {
-        return $this->permission;
-    }
-
-    /**
-     * @param mixed $permission
-     * @return Role
-     */
-    public function setPermission($permission)
-    {
-        $this->permission = $permission;
-        return $this;
-    }
 
     /**
      * @return mixed

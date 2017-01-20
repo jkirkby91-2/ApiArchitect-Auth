@@ -2,9 +2,8 @@
 
 namespace ApiArchitect\Auth\Adapters;
 
-use ApiArchitect\Compass\Entities\User;
-use Doctrine\ORM\EntityNotFoundException;
 use Illuminate\Hashing\BcryptHasher;
+use Doctrine\ORM\EntityNotFoundException;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 use LaravelDoctrine\ORM\Auth\DoctrineUserProvider;
 
@@ -51,8 +50,6 @@ class DoctrineUserAdapter implements Auth
         //check we actually have a user returned
         $this->ifFound($this->doctrineUserAdapter->retrieveByCredentials($credentials));
 
-        $x = $this->doctrineUserAdapter->validateCredentials($authTarget,$credentials);
-
         //validate found user
         if($this->doctrineUserAdapter->validateCredentials($authTarget,$credentials) === true){
             $this->auth = $authTarget;
@@ -95,5 +92,4 @@ class DoctrineUserAdapter implements Auth
             return $object;
         }
     }
-
 }

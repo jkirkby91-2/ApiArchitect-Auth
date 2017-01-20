@@ -45,12 +45,16 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
         include __DIR__.'/../Http/routes.php';
     }
 
+    /**
+     * Register servcice providers for api architect auth module
+     */
     private function registerServiceProviders()
     {
         $this->app->register(\Jkirkby91\LumenDoctrineComponent\Providers\LumenDoctrineServiceProvider::class);
         $this->app->register(\Tymon\JWTAuth\Providers\LumenServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\DoctrineUserAdapterServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\PasswordResetsRepositoryServiceProvider::class);
+        $this->app->register(\ApiArchitect\Auth\Providers\CreateRoleCommandServiceProvider::class);
     }
 
     /**
@@ -65,11 +69,5 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->app->middleware([
             \ApiArchitect\Auth\Http\Middleware\ApiArchitectAuthMiddleware::class
         ]);
-    }
-
-    public function registerController()
-    {
-//        $this->app->make('ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController');
-//        $this->app->make('ApiArchitect\Auth\Http\Controllers\Auth\PasswordResetsController');
     }
 }
