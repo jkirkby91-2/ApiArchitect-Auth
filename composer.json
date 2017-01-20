@@ -10,7 +10,7 @@
         "jkirkby91/DoctrineRepositories": "dev-master",
         "jkirkby91/LumenDoctrineComponent": "dev-master",
         "jkirkby91/LumenRestServerComponent": "dev-master",
-        "tymon/jwt-auth": "1.0.0-beta.1"
+        "tymon/jwt-auth": "1.0.0-alpha.3"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
