@@ -54,4 +54,22 @@ class Role extends LumenDoctrineEntity implements RoleContract
         $this->name = $name;
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPermissions()
+    {
+        return $this->permission;
+    }
+    
+    /**
+     * @param string $permission
+     * @return $this
+     */
+    public function hasPermissionTo($permission)
+    {
+        $this->permission = $permission;
+        return $this;
+    }
 }
