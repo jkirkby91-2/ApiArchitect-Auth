@@ -4,6 +4,7 @@ namespace ApiArchitect\Auth\Entities;
 
 use Doctrine\ORM\Mapping AS ORM;
 use Gedmo\Mapping\Annotation AS Gedmo;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use LaravelDoctrine\ACL\Contracts\Role as RoleContract;
 use Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity;
 
@@ -14,6 +15,7 @@ use Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity;
  * @author James Kirkby <jkirkby91@gmail.com>
  *
  * @Gedmo\Loggable
+ * @ORM\HasLifeCycleCallbacks
  * @ORM\Entity
  * @ORM\Table(name="role", indexes={@ORM\Index(name="name_idx", columns={"name"})})
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\RoleRepository")
