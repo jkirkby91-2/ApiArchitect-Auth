@@ -4,7 +4,8 @@ namespace ApiArchitect\Auth\Entities;
 
 use Doctrine\ORM\Mapping AS ORM;
 use Gedmo\Mapping\Annotation AS Gedmo;
-use LaravelDoctrine\ACL\Contracts\Role AS RoleContract;
+use LaravelDoctrine\ACL\Contracts\Role as RoleContract;
+use Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity;
 
 /**
  * Class Role
@@ -16,7 +17,7 @@ use LaravelDoctrine\ACL\Contracts\Role AS RoleContract;
  * @ORM\Table(name="role", indexes={@ORM\Index(name="name_idx", columns={"name"})})
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\RoleRepository")
  */
-class Role extends \Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity implements RoleContract
+class Role extends LumenDoctrineEntity implements RoleContract
 {
 
     /**
