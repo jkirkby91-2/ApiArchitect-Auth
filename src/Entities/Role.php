@@ -13,6 +13,7 @@ use Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity;
  * @package app\Entities
  * @author James Kirkby <jkirkby91@gmail.com>
  *
+ * @Gedmo\Loggable
  * @ORM\Entity
  * @ORM\Table(name="role", indexes={@ORM\Index(name="name_idx", columns={"name"})})
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\RoleRepository")
