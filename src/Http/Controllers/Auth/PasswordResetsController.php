@@ -68,7 +68,7 @@ class PasswordResetsController extends AuthenticateController
         $itemResource = fractal()
             ->item($this->auth->fromUser($passwordResetEntity->getUser()))
             ->transformWith(new \ApiArchitect\Auth\Http\Transformers\AuthTokenTransformer())
-            ->serializeWith(new \Spatie\Fractal\ArraySerializer())
+            ->serializeWith(new ArraySerializationr())
             ->toArray();
 
         return $this->showResponse($itemResource);

@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityNotFoundException;
 use Tymon\JWTAuth\JWTAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Spatie\Fractal\ArraySerializer AS ArraySerialization;
 
 /**
  * Class AuthenticateController
@@ -54,7 +55,7 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
         return $this->showResponse(fractal()
             ->item($this->token)
             ->transformWith(new \ApiArchitect\Auth\Http\Transformers\AuthTokenTransformer())
-            ->serializeWith(new \Spatie\Fractal\ArraySerializer())
+            ->serializeWith(new ArraySerialization())
             ->toArray()
         );
     }
@@ -127,7 +128,7 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
                 ->find($this->auth->getPayload()->get('sub'))
             )
             ->transformWith(new \ApiArchitect\Compass\Http\Transformers\UserTransformer())
-            ->serializeWith(new \Spatie\Fractal\ArraySerializer());
+            ->serializeWith(new ArraySerialization());
 
         return $this->showResponse($itemResource);
     }
