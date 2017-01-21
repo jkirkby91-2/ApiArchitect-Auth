@@ -1,9 +1,10 @@
 <?php
 
-namespace ApiArchitect\Auth\Http\Middleware;
+namespace ApiArchitect\Auth\Http\Controllers\Middleware;
 
 use Closure;
-use Illuminate\Contracts\Auth\Guard;
+use Tymon\JWTAuth\JWTAuth;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class Authenticate
@@ -21,10 +22,15 @@ class Authenticate
     protected $auth;
 
     /**
+     *
+     */
+    protected $user;
+
+    /**
      * Authenticate constructor.
      * @param Guard $auth
      */
-    public function __construct(Guard $auth)
+    public function __construct(JWTAuth $auth)
     {
         $this->auth = $auth;
     }
@@ -36,13 +42,18 @@ class Authenticate
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(ServerRequestInterface $request, Closure $next)
     {
+               dd($request->getParsedBody());
+
+        $this->user = $this->auth->user();
+        dd($request->getParsedBody());
+
         if ($this->auth->guest()) {
             if ($request->ajax()) {
                 return response('Unauthorized.', 401);
             } else {
-                return redirect()->guest('auth/login');
+                return redirect('auth/login');
             }
         }
         return $next($request);

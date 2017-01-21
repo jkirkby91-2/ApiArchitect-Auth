@@ -94,7 +94,12 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return response()->json(['token_absent'], $e->getStatusCode());
         }
-        return $this->showResponse($user);
+        return $this->showResponse(fractal()
+            ->item($user)
+            ->transformWith(new \ApiArchitect\Compass\Http\Transformers\UserTransformer())
+            ->serializeWith(new ArraySerialization())
+            ->toArray()
+        );
     }
 
     /**
@@ -108,12 +113,19 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
         if (!$token) {
             return $this->response->errorMethodNotAllowed('Token not provided');
         }
+
         try {
             $refreshedToken = $this->auth->refresh($token);
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return $this->response->errorInternal('Not able to refresh Token');
         }
-        return $this->createdResponse(['token' => $refreshedToken]);
+
+        return $this->createdResponse(fractal()
+            ->item($user)
+            ->transformWith(new \ApiArchitect\Compass\Http\Transformers\UserTransformer())
+            ->serializeWith(new ArraySerialization())
+            ->toArray()
+        );
     }
 
     /**
@@ -138,6 +150,6 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
      */
     public function refresh()
     {
-        return $this->showResponse(['success']);
+        return $this->getToken();
     }
 }
