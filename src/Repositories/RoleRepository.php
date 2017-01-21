@@ -12,5 +12,5 @@ use Jkirkby91\LumenDoctrineComponent\Repositories\LumenDoctrineEntityRepository;
  */
 class RoleRepository extends LumenDoctrineEntityRepository implements \Jkirkby91\Boilers\RepositoryBoiler\CrudRepositoryContract
 {
-    use \Jkirkby91\DoctrineRepositories\CrudRepositoryTrait;
+    use \Jkirkby91\DoctrineRepositories\ResourceRepositoryTrait;
 }

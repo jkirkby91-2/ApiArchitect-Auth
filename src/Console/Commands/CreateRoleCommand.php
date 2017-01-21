@@ -35,6 +35,6 @@ class CreateRoleCommand extends Command
         $role = app()
             ->make('em')
             ->getRepository('\ApiArchitect\Auth\Entities\Role')
-            ->create($roleEntity);
+            ->store($roleEntity);
     }
 }
