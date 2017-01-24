@@ -10,7 +10,7 @@ use Jkirkby91\LumenDoctrineComponent\Repositories\LumenDoctrineEntityRepository;
  * @package ApiArchitect\Auth\Repositories
  * @author James Kirkby <jkirkby91@gmail.com>
  */
-class RoleRepository extends LumenDoctrineEntityRepository implements \Jkirkby91\Boilers\RepositoryBoiler\CrudRepositoryContract
+class RoleRepository extends LumenDoctrineEntityRepository implements \Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract
 {
     use \Jkirkby91\DoctrineRepositories\ResourceRepositoryTrait;
 }

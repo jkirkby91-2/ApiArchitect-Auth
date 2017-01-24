@@ -117,15 +117,10 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
         try {
             $refreshedToken = $this->auth->refresh($token);
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-            return $this->response->errorInternal('Not able to refresh Token');
+            return $this->clientErrorResponse('Not able to refresh Token');
         }
 
-        return $this->createdResponse(fractal()
-            ->item($user)
-            ->transformWith(new \ApiArchitect\Compass\Http\Transformers\UserTransformer())
-            ->serializeWith(new ArraySerialization())
-            ->toArray()
-        );
+        return $this->createdResponse(['token' => $refreshedToken]);
     }
 
     /**

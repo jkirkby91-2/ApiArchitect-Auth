@@ -44,10 +44,9 @@ class Authenticate
      */
     public function handle(ServerRequestInterface $request, Closure $next)
     {
-               dd($request->getParsedBody());
+               // dd($request->getParsedBody());
 
         $this->user = $this->auth->user();
-        dd($request->getParsedBody());
 
         if ($this->auth->guest()) {
             if ($request->ajax()) {

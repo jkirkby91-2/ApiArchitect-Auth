@@ -61,9 +61,9 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
     public function registerRouteMiddleware()
     {
         $this->app->routeMiddleware([
-            'jwt-auth' => \ApiArchitect\Auth\Http\Controllers\Middleware\Authenticate::class,
-            'jwt-refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
-            'role' => \ApiArchitect\Auth\Http\Controllers\Middleware\RoleMiddleware::class,
+            'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+            'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
+            // 'role' => \ApiArchitect\Auth\Http\Controllers\Middleware\RoleMiddleware::class,
         ]);
 
     }

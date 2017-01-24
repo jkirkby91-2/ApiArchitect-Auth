@@ -19,7 +19,7 @@ class RoleMiddleware
      */
     public function handle(ServerRequestInterface $request, Closure $next, $role)
     {
-        dd($this->auth->user);
+        // dd($this->auth->user);
         $user = $this->auth->parseToken()->authenticate();
         if (!$user->hasRole($role)) {
             return redirect('/login');
