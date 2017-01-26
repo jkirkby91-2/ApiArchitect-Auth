@@ -6,10 +6,15 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Interface AuthControllerContract
+ *
  * @package ApiArchitect\Auth\Contracts
+ * @author James Kirkby <jkirkby91@gmail.com>
  */
 interface JWTAuthControllerContract
 {
+    /**
+     * @param ServerRequestInterface $request
+     */
     public function authenticate(ServerRequestInterface $request);
 
     /**
@@ -30,6 +35,4 @@ interface JWTAuthControllerContract
      * @return mixed
      */
     public function getToken();
-
-
 }

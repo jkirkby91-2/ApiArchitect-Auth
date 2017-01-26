@@ -2,11 +2,14 @@
 
 namespace ApiArchitect\Auth\Http\Controllers\Auth;
 
+use ApiArchitect\Compass\Http\Controllers\RestApi;
 use Doctrine\ORM\EntityNotFoundException;
 use Tymon\JWTAuth\JWTAuth;
 use Psr\Http\Message\ServerRequestInterface;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Spatie\Fractal\ArraySerializer AS ArraySerialization;
+use ApiArchitect\Auth\Contracts\JWTAuthControllerContract;
+use Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController;
 
 /**
  * Class AuthenticateController
@@ -14,7 +17,7 @@ use Spatie\Fractal\ArraySerializer AS ArraySerialization;
  * @package app\Http\Controllers
  * @author James Kirkby <jkirkby91@gmail.com>
  */
-class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController implements \ApiArchitect\Auth\Contracts\JWTAuthControllerContract
+class AuthenticateController extends RestApi implements JWTAuthControllerContract
 {
 
     /**
@@ -43,6 +46,7 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
     public function authenticate(ServerRequestInterface $request)
     {
         try {
+
             if (! $this->token = $this->auth->attempt($request->getParsedBody())) {
                 return $this->UnauthorizedResponse();
             }
@@ -84,7 +88,7 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
     public function authenticatedUser()
     {
         try {
-            if (!$user = $this->auth->parseToken()->authenticate()) {
+            if (!$this->user = $this->auth->parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             }
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
@@ -95,7 +99,7 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
             return response()->json(['token_absent'], $e->getStatusCode());
         }
         return $this->showResponse(fractal()
-            ->item($user)
+            ->item($this->user)
             ->transformWith(new \ApiArchitect\Compass\Http\Transformers\UserTransformer())
             ->serializeWith(new ArraySerialization())
             ->toArray()
@@ -128,7 +132,7 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
      */
     public function user()
     {
-        $itemResource = fractal()
+        $this->user = fractal()
             ->item(app()
                 ->make('em')
                 ->getRepository('\ApiArchitect\Compass\Entities\User')
@@ -137,7 +141,7 @@ class AuthenticateController extends \Jkirkby91\LumenRestServerComponent\Http\Co
             ->transformWith(new \ApiArchitect\Compass\Http\Transformers\UserTransformer())
             ->serializeWith(new ArraySerialization());
 
-        return $this->showResponse($itemResource);
+        return $this->showResponse($this->user);
     }
 
     /**

@@ -6,27 +6,27 @@ use Illuminate\Hashing\BcryptHasher;
 use Doctrine\ORM\EntityNotFoundException;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 use LaravelDoctrine\ORM\Auth\DoctrineUserProvider;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * Class DoctrineUserAdapter
  *
- * Authentication driver for JWT Auth
+ * Doctrine authentication driver for JWT Auth
  *
- * @package app\Providers\User
+ * @package ApiArchitect\Auth\
  * @author James Kirkby <jkirkby91@gmail.com>
  */
 class DoctrineUserAdapter implements Auth
 {
 
     /**
-     * @var DoctrineUserProvider
-     */
-    protected $doctrineUserAdapter;
-
-    /**
      * @var
      */
     protected $auth;
+
+    protected $user;
+
+    protected $doctrineUserProvider;
 
     /**
      * DoctrineUserAdapter constructor.
@@ -35,7 +35,7 @@ class DoctrineUserAdapter implements Auth
      */
     public function __construct(DoctrineUserProvider $doctrineUserProvider)
     {
-        $this->doctrineUserAdapter = $doctrineUserProvider;
+        $this->doctrineUserProvider = $doctrineUserProvider;
     }
 
     /**
@@ -44,16 +44,13 @@ class DoctrineUserAdapter implements Auth
      */
     public function byCredentials(array $credentials)
     {
-        //try get the auth target user
-        $authTarget = $this->doctrineUserAdapter->retrieveByCredentials($credentials);
-
-        //check we actually have a user returned
-        $this->ifFound($this->doctrineUserAdapter->retrieveByCredentials($credentials));
+        //try get a user
+        $authTarget = $this->ifFound($this->doctrineUserProvider->retrieveByCredentials($credentials));
 
         //validate found user
-        if($this->doctrineUserAdapter->validateCredentials($authTarget,$credentials) === true){
-            $this->auth = $authTarget;
-            return $this->auth;
+        if($this->doctrineUserProvider->validateCredentials($authTarget,$credentials) === true){
+            $this->user = $authTarget;
+            return $this->user;
         } else {
             return false;
         }
@@ -65,7 +62,9 @@ class DoctrineUserAdapter implements Auth
      */
     public function byId($id)
     {
-        return $this->ifFound($this->doctrineUserAdapter->retrieveById($id));
+        $this->user = $this->ifFound($this->doctrineUserProvider->retrieveById($id));
+
+        return $this->ifFound($this->user);
     }
 
     /**
@@ -73,7 +72,7 @@ class DoctrineUserAdapter implements Auth
      */
     public function user()
     {
-        return $this->auth;
+        return $this->user;
     }
 
     /**
@@ -85,11 +84,15 @@ class DoctrineUserAdapter implements Auth
      */
     private function ifFound($object)
     {
-        if(is_null($object))
+        if(is_null($object) || !is_a($object, 'ApiArchitect\Compass\Entities\User'))
         {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException;
         } else {
-            return $object;
+            if($object->getEnabled() != false) {
+                return $object;
+            } else {
+                throw new UnauthorizedHttpException('User Account Has Been Banned');
+            }
         }
     }
 }

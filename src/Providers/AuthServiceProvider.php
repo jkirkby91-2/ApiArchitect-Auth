@@ -2,13 +2,16 @@
 
 namespace ApiArchitect\Auth\Providers;
 
+use Illuminate\Support\ServiceProvider;
+use ApiArchitect\Auth\Http\Parser\Parser;
+use ApiArchitect\Auth\Http\Parser\AuthHeaders;
 /**
  * Class AuthServiceProvider
  *
  * @package ApiArchitect\Auth\Providers
  * @author James Kirkby <jkirkby91@gmail.com>
  */
-class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
+class AuthServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -18,6 +21,7 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
     public function register()
     {
         $this->registerRoutes();
+         $this->registerTokenParser();
         $this->registerServiceProviders();
         $this->registerRouteMiddleware();
 
@@ -38,7 +42,7 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
     /**
      * Register Routes
      */
-    public function registerRoutes()
+    protected function registerRoutes()
     {
         include __DIR__.'/../Http/routes.php';
     }
@@ -52,19 +56,37 @@ class AuthServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->app->register(\Tymon\JWTAuth\Providers\LumenServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\DoctrineUserAdapterServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\PasswordResetsRepositoryServiceProvider::class);
-        $this->app->register(\ApiArchitect\Auth\Providers\CreateRoleCommandServiceProvider::class);
+
+        if(getenv('APP_ENV') === 'local') {
+            $this->app->register(\ApiArchitect\Auth\Providers\CreateRoleCommandServiceProvider::class);
+        }
+    }
+
+    /**
+     * Register the bindings for the Token Parser.
+     *
+     * @return void
+     */
+    protected function registerTokenParser()
+    {
+       $this->app->bind(\ApiArchitect\Auth\Http\Parser\Parser::class, function($app) {
+            return new \ApiArchitect\Auth\Http\Parser\Parser(
+                $app['psr7request'],[new AuthHeaders]
+            );
+        });
     }
 
     /**
      * Register app Auth Middleware
      */
-    public function registerRouteMiddleware()
+    protected function registerRouteMiddleware()
     {
         $this->app->routeMiddleware([
-            'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+            'psr7adapter' => \Jkirkby91\IlluminateRequestPSR7Adapter\Middleware\PSR7AdapterMiddleware::class,
+            'jwt.auth' => \ApiArchitect\Auth\Http\Controllers\Middleware\Authenticate::class,
             'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
             // 'role' => \ApiArchitect\Auth\Http\Controllers\Middleware\RoleMiddleware::class,
         ]);
-
     }
+
 }
