@@ -21,7 +21,7 @@ class AuthServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerRoutes();
-         $this->registerTokenParser();
+        $this->registerTokenParser();
         $this->registerServiceProviders();
         $this->registerRouteMiddleware();
 
@@ -83,8 +83,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->app->routeMiddleware([
             'psr7adapter' => \Jkirkby91\IlluminateRequestPSR7Adapter\Middleware\PSR7AdapterMiddleware::class,
-            'jwt.auth' => \ApiArchitect\Auth\Http\Controllers\Middleware\Authenticate::class,
-            'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
+            'apiarchitect.auth' => \ApiArchitect\Auth\Http\Controllers\Middleware\Authenticate::class,
+            'apiarchitect.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
             // 'role' => \ApiArchitect\Auth\Http\Controllers\Middleware\RoleMiddleware::class,
         ]);
     }
