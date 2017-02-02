@@ -45,6 +45,7 @@ class AuthenticateController extends RestApi implements JWTAuthControllerContrac
      */
     public function authenticate(ServerRequestInterface $request)
     {
+
         try {
 
             if (! $this->token = $this->auth->attempt($request->getParsedBody())) {
