@@ -100,7 +100,6 @@ class Parser implements JWTRequestParserContract
      */
     public function setRequest(ServerRequestInterface $request)
     {
-        // dd($request);
         $this->request = $request;
 
         return $this;

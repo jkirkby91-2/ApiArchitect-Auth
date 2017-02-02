@@ -44,7 +44,6 @@ class AuthHeaders implements JWTParserContract
      */
     public function parse(ServerRequestInterface $request)
     {
-// echo(123);dd($request);
         $header = $request->getHeader($this->header) ?: $this->fromAltHeaders($request);
         //@TODO some logic to make sure we onlyget one header, or check each header that matches
 
