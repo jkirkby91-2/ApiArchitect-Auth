@@ -10,6 +10,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Spatie\Fractal\ArraySerializer AS ArraySerialization;
 use ApiArchitect\Auth\Contracts\JWTAuthControllerContract;
 use Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Class AuthenticateController
