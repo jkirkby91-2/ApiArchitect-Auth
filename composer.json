@@ -3,7 +3,7 @@
     "description": "Auth For ApiArchitect.",
     "keywords": ["Auth","ApiArchitect", "lumen"],
     "license": "CC BY-NC-SA",
-    "type": "project",
+    "type": "library",
     "require": {
         "php": ">=5.5.9",
         "jkirkby91/DoctrineNodeEntity": "dev-master",
