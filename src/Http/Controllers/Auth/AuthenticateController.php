@@ -2,7 +2,7 @@
 
 namespace ApiArchitect\Auth\Http\Controllers\Auth;
 
-use ApiArchitect\Compass\Http\Controllers\RestApi;
+use Jkirkby91\LumenRestServerComponent\Http\Controllers\RestController;
 use Doctrine\ORM\EntityNotFoundException;
 use Tymon\JWTAuth\JWTAuth;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,7 +18,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @package app\Http\Controllers
  * @author James Kirkby <jkirkby91@gmail.com>
  */
-class AuthenticateController extends RestApi implements JWTAuthControllerContract
+class AuthenticateController extends RestController implements JWTAuthControllerContract
 {
 
     /**
