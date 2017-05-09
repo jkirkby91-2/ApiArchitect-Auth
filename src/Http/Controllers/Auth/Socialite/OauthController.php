@@ -7,24 +7,41 @@ use Tymon\JWTAuth\JWTAuth;
 use ApiArchitect\Auth\Entities\User;
 use Laravel\Socialite\SocialiteManager;
 use ApiArchitect\Auth\Contracts\SocialiteOauthContract;
-use ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController;
+use Spatie\Fractal\ArraySerializer AS ArraySerialization;
+use Jkirkby91\LumenRestServerComponent\Libraries\ResourceResponseTrait;
+use Jkirkby91\LumenRestServerComponent\Http\Controllers\RestController;
+use Jkirkby91\Boilers\RestServerBoiler\TransformerContract AS ObjectTransformer;
 use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
 
-class OauthController extends AuthenticateController implements SocialiteOauthContract
+class OauthController extends RestController implements SocialiteOauthContract
 {
+
+    use ResourceResponseTrait;
 
     protected $socialiteManager;
 
     protected $repository;
 
     /**
+     * @var $auth
+     */
+    protected $auth;
+
+    /**
+     * @var ObjectTransformer
+     */
+    protected $transformer;
+
+    /**
      * OauthController constructor.
      * @param SocialiteManager $socialiteManager
      */
-    public function __Construct(SocialiteManager $socialiteManager, ResourceRepository $repository)
+    public function __Construct(SocialiteManager $socialiteManager, ResourceRepository $repository, JWTAuth $auth, ObjectTransformer $objectTransformer)
     {
+      $this->auth = $auth;
       $this->socialiteManager = $socialiteManager;
       $this->repository = $repository;
+      $this->transformer = $objectTransformer;
     }
 
     /**
@@ -68,6 +85,13 @@ class OauthController extends AuthenticateController implements SocialiteOauthCo
 
       $userEntity = $this->repository->findOrCreateUser($userEntity);
 
-    }
+      $token = $this->auth->fromUser($userEntity);
+      
+      $resource = $this->item($token)
+          ->transformWith($this->transformer)
+          ->serializeWith(new ArraySerialization())
+          ->toArray();
 
+      return $this->showResponse($resource);
+    }
 }

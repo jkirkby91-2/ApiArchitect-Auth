@@ -23,6 +23,7 @@ class SocialiteServiceProvider extends ServiceProvider
     public function register()
     {
       $this->registerServiceProviders();
+      $this->registerControllers();
     }
 
     /**
@@ -36,5 +37,26 @@ class SocialiteServiceProvider extends ServiceProvider
       if(getenv('APP_ENV') === 'local') {
         $this->app->register(\ApiArchitect\Auth\Providers\CreateProviderCommandServiceProvider::class);
       }      
-    }    
+    }   
+
+     /**
+      * Register Controllers + inject their transformer
+      */
+     public function registerControllers()
+     {
+
+      $this->app->bind(\ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController::class, function($app) {
+             return new \ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController(
+              new \Laravel\Socialite\SocialiteManager($app),
+              $app['em']->getRepository(\ApiArchitect\Auth\Entities\User::class),
+              new \Tymon\JWTAuth\JWTAuth(
+                $app['tymon.jwt.manager'],
+                $app['tymon.jwt.provider.auth'],
+                $app['tymon.jwt.parser']
+              ),
+              new \ApiArchitect\Auth\Http\Transformers\AuthTokenTransformer
+             );
+         });
+     }     
 }
+ 

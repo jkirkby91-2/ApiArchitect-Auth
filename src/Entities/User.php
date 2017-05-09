@@ -88,9 +88,9 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
   protected $provider;
 
   /**
-   * @ORM\Column(type="integer", unique=false, nullable=true)
+   * @ORM\Column(type="string", unique=false, nullable=true)
    */
-  protected $providerId;
+  protected $providerUid;
 
   /**
    * @ORM\Column(type="integer", unique=false, nullable=true)
@@ -297,7 +297,7 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
    */
   public function getProviderId()
   {
-      return $this->providerId;
+      return $this->providerUid;
   }
 
   /**
@@ -309,7 +309,7 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
    */
   public function setProviderId($providerId)
   {
-      $this->providerId = $providerId;
+      $this->providerUid = $providerId;
 
       return $this;
   }

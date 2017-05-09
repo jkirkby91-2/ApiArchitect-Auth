@@ -20,7 +20,7 @@ class UserRepository extends AbstractRepository implements ResourceRepositoryCon
 
     public function findOrCreateUser(User $target)
     {
-      $userEntity = $this->findBy(['email' => $target->getEmail()]);
+      $userEntity = $this->findOneBy(['email' => $target->getEmail()]);
 
       if(!empty($userEntity)){
         return $userEntity;

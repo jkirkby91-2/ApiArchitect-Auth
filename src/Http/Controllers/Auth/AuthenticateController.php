@@ -9,8 +9,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Spatie\Fractal\ArraySerializer AS ArraySerialization;
 use ApiArchitect\Auth\Contracts\JWTAuthControllerContract;
+use Jkirkby91\LumenRestServerComponent\Libraries\ResourceResponseTrait;
 use Jkirkby91\LumenRestServerComponent\Http\Controllers\RestController;
-use Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController;
 
 /**
  * Class AuthenticateController
@@ -20,6 +20,8 @@ use Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController;
  */
 class AuthenticateController extends RestController implements JWTAuthControllerContract
 {
+
+    use ResourceResponseTrait;
 
     /**
      * @var $auth
@@ -32,12 +34,27 @@ class AuthenticateController extends RestController implements JWTAuthController
     protected $token;
 
     /**
+     * @var ObjectTransformer
+     */
+    protected $authTokenTransformer;
+
+    /**
+     * @var ObjectTransformer
+     */
+    protected $userTransformer;
+
+    protected $repository;    
+
+    /**
      * AuthenticateController constructor.
      * @param JWTAuth $auth
      */
-    public function __construct(JWTAuth $auth)
+    public function __construct(JWTAuth $auth, ResourceRepository $repository, ObjectTransformer $authTokenTransformer, ObjectTransformer $userTransformer)
     {
         $this->auth = $auth;
+        $this->repository = $repository;
+        $this->authTokenTransformer = $authTokenTransformer;
+        $this->userTransformer = $userTransformer;
     }
 
     /**
@@ -56,12 +73,12 @@ class AuthenticateController extends RestController implements JWTAuthController
           return $this->notFoundResponse();
         }
 
-        return $this->showResponse(fractal()
-            ->item($this->token)
-            ->transformWith(new \ApiArchitect\Auth\Http\Transformers\AuthTokenTransformer())
+        $token = $this->item($this->token)
+            ->transformWith($this->authTokenTransformer)
             ->serializeWith(new ArraySerialization())
-            ->toArray()
-        );
+            ->toArray();
+
+        return $this->showResponse($token);
     }
 
     /**
@@ -98,12 +115,13 @@ class AuthenticateController extends RestController implements JWTAuthController
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
             return response()->json(['token_absent'], $e->getStatusCode());
         }
-        return $this->showResponse(fractal()
-            ->item($this->user)
-            ->transformWith(new \ApiArchitect\Auth\Http\Transformers\UserTransformer())
+
+        $user = $this->item($this->user)
+            ->transformWith($this->userTransformer)
             ->serializeWith(new ArraySerialization())
-            ->toArray()
-        );
+            ->toArray();
+
+        return $this->showResponse($user);
     }
 
     /**
@@ -124,7 +142,12 @@ class AuthenticateController extends RestController implements JWTAuthController
             return $this->clientErrorResponse('Not able to refresh Token');
         }
 
-        return $this->createdResponse(['token' => $refreshedToken]);
+        $token = $this->item($refreshedToken)
+            ->transformWith($this->authTokenTransformer)
+            ->serializeWith(new ArraySerialization())
+            ->toArray();
+
+        return $this->showResponse($token);
     }
 
     /**
@@ -132,16 +155,14 @@ class AuthenticateController extends RestController implements JWTAuthController
      */
     public function user()
     {
-        $this->user = fractal()
-            ->item(app()
-                ->make('em')
-                ->getRepository('\ApiArchitect\Auth\Entities\User')
-                ->find($this->auth->getPayload()->get('sub'))
-            )
-            ->transformWith(new \ApiArchitect\Auth\Http\Transformers\UserTransformer())
-            ->serializeWith(new ArraySerialization());
+      $this->user = $this->repository->find($this->auth->getPayload()->get('sub'));
 
-        return $this->showResponse($this->user);
+        $user = $this->item($this->user)
+            ->transformWith($this->userTransformer)
+            ->serializeWith(new ArraySerialization())
+            ->toArray();
+
+        return $this->showResponse($user);
     }
 
     /**

@@ -12,10 +12,10 @@ use League\Fractal\TransformerAbstract;
  */
 class AuthTokenTransformer extends TransformerAbstract implements TransformerContract
 {
-    public function transform($token)
+    public function transform($object)
     {
         return [
-            'token' => $token
+            'token' => $object
         ];
     }
 }
