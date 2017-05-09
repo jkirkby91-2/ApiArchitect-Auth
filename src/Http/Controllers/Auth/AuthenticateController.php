@@ -46,16 +46,14 @@ class AuthenticateController extends RestController implements JWTAuthController
      */
     public function authenticate(ServerRequestInterface $request)
     {
-
         try {
-
-            if (! $this->token = $this->auth->attempt($request->getParsedBody())) {
-                return $this->UnauthorizedResponse();
-            }
+          if (! $this->token = $this->auth->attempt($request->getParsedBody())) {
+              return $this->UnauthorizedResponse();
+          }
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-            return $this->clientErrorResponse();
+          return $this->clientErrorResponse();
         } catch (EntityNotFoundException $e) {
-            return $this->notFoundResponse();
+          return $this->notFoundResponse();
         }
 
         return $this->showResponse(fractal()
@@ -102,7 +100,7 @@ class AuthenticateController extends RestController implements JWTAuthController
         }
         return $this->showResponse(fractal()
             ->item($this->user)
-            ->transformWith(new \ApiArchitect\Compass\Http\Transformers\UserTransformer())
+            ->transformWith(new \ApiArchitect\Auth\Http\Transformers\UserTransformer())
             ->serializeWith(new ArraySerialization())
             ->toArray()
         );
@@ -137,10 +135,10 @@ class AuthenticateController extends RestController implements JWTAuthController
         $this->user = fractal()
             ->item(app()
                 ->make('em')
-                ->getRepository('\ApiArchitect\Compass\Entities\User')
+                ->getRepository('\ApiArchitect\Auth\Entities\User')
                 ->find($this->auth->getPayload()->get('sub'))
             )
-            ->transformWith(new \ApiArchitect\Compass\Http\Transformers\UserTransformer())
+            ->transformWith(new \ApiArchitect\Auth\Http\Transformers\UserTransformer())
             ->serializeWith(new ArraySerialization());
 
         return $this->showResponse($this->user);

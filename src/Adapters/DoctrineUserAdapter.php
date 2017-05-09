@@ -84,7 +84,7 @@ class DoctrineUserAdapter implements Auth
      */
     private function ifFound($object)
     {
-        if(is_null($object) || !is_a($object, 'ApiArchitect\Compass\Entities\User'))
+        if(is_null($object) || !is_a($object, 'ApiArchitect\Auth\Entities\User'))
         {
             throw new EntityNotFoundException;
         } else {

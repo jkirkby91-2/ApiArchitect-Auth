@@ -14,3 +14,12 @@ $this->app->get('/auth/refresh', 'ApiArchitect\Auth\Http\Controllers\Auth\Authen
 
 $this->app->get('auth/oauth/facebook/redirect', 'ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController@redirectToProvider');
 $this->app->get('auth/oauth/facebook/callback', 'ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController@handleProviderCallback');
+
+$this->app->post('auth/register', 'ApiArchitect\Auth\Http\Controllers\User\UserController@register');
+
+$this->app->group(['middleware' => 'jwt.auth'], function ($app){
+    resource('user','ApiArchitect\Compass\Http\Controllers\User\UserController');
+});
+
+$this->app->post('auth/check/username', 'ApiArchitect\Compass\Auth\Controllers\User\UserController@checkUniqueUserName');
+$this->app->post('auth/check/email', 'ApiArchitect\Compass\Auth\Controllers\User\UserController@checkUniqueEmail');

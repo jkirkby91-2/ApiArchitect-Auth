@@ -37,7 +37,7 @@ class DoctrineUserAdapterServiceProvider extends \Illuminate\Support\ServiceProv
                 new \LaravelDoctrine\ORM\Auth\DoctrineUserProvider(
                     $app['hash'],
                     $app['em'],
-                    \ApiArchitect\Compass\Entities\User::class
+                    \ApiArchitect\Auth\Entities\User::class
                 )
             );
         });

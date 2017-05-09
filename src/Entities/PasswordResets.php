@@ -20,7 +20,7 @@ class PasswordResets extends \Jkirkby91\LumenDoctrineComponent\Entities\LumenDoc
 
     /**
      * @var
-     * @ORM\ManyToOne(targetEntity="\ApiArchitect\Compass\Entities\User")
+     * @ORM\ManyToOne(targetEntity="\ApiArchitect\Auth\Entities\User")
      */
     protected $user;
 

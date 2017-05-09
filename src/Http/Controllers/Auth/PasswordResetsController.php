@@ -27,7 +27,7 @@ class PasswordResetsController extends AuthenticateController
     {
         $data = $request->getParsedBody();
 
-        $user = app()->make('em')->getRepository('\ApiArchitect\Compass\Entities\User')->findOneBy(['email' => $data['email']]);
+        $user = app()->make('em')->getRepository('\ApiArchitect\Auth\Entities\User')->findOneBy(['email' => $data['email']]);
 
         //@TODO check email exists wrap this in condition logic
         if(!is_null($user))

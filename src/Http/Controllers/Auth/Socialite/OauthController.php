@@ -7,19 +7,23 @@ use Tymon\JWTAuth\JWTAuth;
 use Laravel\Socialite\SocialiteManager;
 use ApiArchitect\Auth\Contracts\SocialiteOauthContract;
 use ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController;
+use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
 
 class OauthController extends AuthenticateController implements SocialiteOauthContract
 {
 
     protected $socialiteManager;
 
+    protected $repository;
+
     /**
      * OauthController constructor.
      * @param SocialiteManager $socialiteManager
      */
-    public function __Construct(SocialiteManager $socialiteManager)
+    public function __Construct(SocialiteManager $socialiteManager, ResourceRepository $repository)
     {
       $this->socialiteManager = $socialiteManager;
+      $this->repository = $repository;
     }
 
     /**
@@ -40,9 +44,11 @@ class OauthController extends AuthenticateController implements SocialiteOauthCo
      *
      * @return Response
      */
-    public function handleProviderCallback($provider)
+    public function handleProviderCallback($provider='facebook')
     {
+      $oauthUser = $this->socialiteManager->with($provider)->stateless()->user();
 
+      $x = $this->repository->findOrCreateuser($oauthUser);
     }
 
 }

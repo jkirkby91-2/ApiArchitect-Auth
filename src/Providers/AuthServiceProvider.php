@@ -53,11 +53,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     private function registerServiceProviders()
     {
-        $this->app->register(\Jkirkby91\LumenDoctrineComponent\Providers\LumenDoctrineServiceProvider::class);
         $this->app->register(\Tymon\JWTAuth\Providers\LumenServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\DoctrineUserAdapterServiceProvider::class);
+        $this->app->register(\Jkirkby91\LumenDoctrineComponent\Providers\LumenDoctrineServiceProvider::class);
+        $this->app->register(\ApiArchitect\Auth\Providers\UserRepositoryServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\PasswordResetsRepositoryServiceProvider::class);
-        $this->app->register(\Laravel\Socialite\SocialiteServiceProvider::class);
 
         if(getenv('SOCIALITE_ENABLED') === 'TRUE') {        
           $this->app->register(\ApiArchitect\Auth\Providers\SocialiteServiceProvider::class);
@@ -100,16 +100,17 @@ class AuthServiceProvider extends ServiceProvider
       */
      public function registerControllers()
      {
-         $this->app->bind(\ApiArchitect\Compass\Http\Controllers\User\UserController::class, function($app) {
-             return new \ApiArchitect\Compass\Http\Controllers\User\UserController(
-                 $app['em']->getRepository(\ApiArchitect\Compass\Entities\User::class),
-                 new \ApiArchitect\Compass\Http\Transformers\UserTransformer
+         $this->app->bind(\ApiArchitect\Auth\Http\Controllers\User\UserController::class, function($app) {
+             return new \ApiArchitect\Auth\Http\Controllers\User\UserController(
+                 $app['em']->getRepository(\ApiArchitect\Auth\Entities\User::class),
+                 new \ApiArchitect\Auth\Http\Transformers\UserTransformer
              );
          });
 
          $this->app->bind(\ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController::class, function($app) {
              return new \ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController(
-              new \Laravel\Socialite\SocialiteManager($app)
+              new \Laravel\Socialite\SocialiteManager($app),
+              $app['em']->getRepository(\ApiArchitect\Auth\Entities\User::class)
              );
          });         
      }
