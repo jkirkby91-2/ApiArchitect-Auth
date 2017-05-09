@@ -1,6 +1,6 @@
 <?php
 
-namespace ApiArchitect\Auth\Http\Controllers\Middleware;
+namespace ApiArchitect\Auth\Http\Middleware;
 
 use Closure;
 use Tymon\JWTAuth\JWTAuth;

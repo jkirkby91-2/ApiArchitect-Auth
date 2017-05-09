@@ -11,3 +11,6 @@ $this->app->post('/auth/password/reset', 'ApiArchitect\Auth\Http\Controllers\Aut
 $this->app->get('/auth/password/reset/{token}', 'ApiArchitect\Auth\Http\Controllers\Auth\PasswordResetsController@verify');
 
 $this->app->get('/auth/refresh', 'ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController@refresh');
+
+$this->app->get('auth/oauth/facebook/redirect', 'ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController@redirectToProvider');
+$this->app->get('auth/oauth/facebook/callback', 'ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController@handleProviderCallback');

@@ -2,15 +2,15 @@
 
 namespace ApiArchitect\Auth\Http\Controllers\Auth;
 
-use Jkirkby91\LumenRestServerComponent\Http\Controllers\RestController;
-use Doctrine\ORM\EntityNotFoundException;
 use Tymon\JWTAuth\JWTAuth;
-use Psr\Http\Message\ServerRequestInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Psr\Http\Message\ServerRequestInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Spatie\Fractal\ArraySerializer AS ArraySerialization;
 use ApiArchitect\Auth\Contracts\JWTAuthControllerContract;
+use Jkirkby91\LumenRestServerComponent\Http\Controllers\RestController;
 use Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Class AuthenticateController

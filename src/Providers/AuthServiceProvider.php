@@ -24,6 +24,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerTokenParser();
         $this->registerServiceProviders();
         $this->registerRouteMiddleware();
+        $this->registerControllers();
 
         //bind password entity to entity contract implementation
         $this->app->bind(
@@ -56,6 +57,11 @@ class AuthServiceProvider extends ServiceProvider
         $this->app->register(\Tymon\JWTAuth\Providers\LumenServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\DoctrineUserAdapterServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\PasswordResetsRepositoryServiceProvider::class);
+        $this->app->register(\Laravel\Socialite\SocialiteServiceProvider::class);
+
+        if(getenv('SOCIALITE_ENABLED') === 'TRUE') {        
+          $this->app->register(\ApiArchitect\Auth\Providers\SocialiteServiceProvider::class);
+        }
 
         if(getenv('APP_ENV') === 'local') {
             $this->app->register(\ApiArchitect\Auth\Providers\CreateRoleCommandServiceProvider::class);
@@ -83,10 +89,29 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->app->routeMiddleware([
             'psr7adapter' => \Jkirkby91\IlluminateRequestPSR7Adapter\Middleware\PSR7AdapterMiddleware::class,
-            'apiarchitect.auth' => \ApiArchitect\Auth\Http\Controllers\Middleware\Authenticate::class,
+            'apiarchitect.auth' => \ApiArchitect\Auth\Http\Controllers\Authenticate::class,
             'apiarchitect.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
             // 'role' => \ApiArchitect\Auth\Http\Controllers\Middleware\RoleMiddleware::class,
         ]);
     }
+
+     /**
+      * Register Controllers + inject their transformer
+      */
+     public function registerControllers()
+     {
+         $this->app->bind(\ApiArchitect\Compass\Http\Controllers\User\UserController::class, function($app) {
+             return new \ApiArchitect\Compass\Http\Controllers\User\UserController(
+                 $app['em']->getRepository(\ApiArchitect\Compass\Entities\User::class),
+                 new \ApiArchitect\Compass\Http\Transformers\UserTransformer
+             );
+         });
+
+         $this->app->bind(\ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController::class, function($app) {
+             return new \ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController(
+              new \Laravel\Socialite\SocialiteManager($app)
+             );
+         });         
+     }
 
 }
