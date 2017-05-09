@@ -5,6 +5,7 @@ namespace ApiArchitect\Auth\Providers;
 use Illuminate\Support\ServiceProvider;
 use ApiArchitect\Auth\Http\Parser\Parser;
 use ApiArchitect\Auth\Http\Parser\AuthHeaders;
+
 /**
  * Class SocialiteServiceProvider
  *
@@ -30,5 +31,10 @@ class SocialiteServiceProvider extends ServiceProvider
     private function registerServiceProviders()
     {
       $this->app->register(\Laravel\Socialite\SocialiteServiceProvider::class);
+      $this->app->register(\ApiArchitect\Auth\Providers\ProviderRepositoryServiceProvider::class);
+  
+      if(getenv('APP_ENV') === 'local') {
+        $this->app->register(\ApiArchitect\Auth\Providers\CreateProviderCommandServiceProvider::class);
+      }      
     }    
 }

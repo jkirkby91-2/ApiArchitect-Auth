@@ -10,6 +10,7 @@ use LaravelDoctrine\ACL\Mappings as ACL;
 use Jkirkby91\DoctrineSchemas\Entities\Thing;
 use Doctrine\Common\Collections\ArrayCollection;
 use LaravelDoctrine\ACL\Roles\HasRoles as HasRolesTrait;
+use Laravel\Socialite\Contracts\User AS SocialUserContract;
 use LaravelDoctrine\ACL\Contracts\HasRoles as HasRolesContract;
 use LaravelDoctrine\ORM\Auth\Authenticatable as AuthenticatableTrait;
 use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
@@ -30,7 +31,7 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
  * @package app\Http\Controllers
  * @author James Kirkby <jkirkby91@gmail.com>
  */
-class User extends Thing implements AuthenticatableContract, JWTSubject, CanResetPasswordContract, HasRolesContract, HasPermissionContract
+class User extends Thing implements AuthenticatableContract, JWTSubject, CanResetPasswordContract, HasRolesContract, HasPermissionContract,SocialUserContract
 {
 
   use HasRolesTrait, HasPermissionsTrait, AuthenticatableTrait, CanResetPasswordTrait;
@@ -50,7 +51,7 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
   protected $roles;
 
   /**
-   * @ORM\Column(type="string", nullable=false)
+   * @ORM\Column(type="string", nullable=true)
    */
   protected $username;
 
@@ -74,6 +75,27 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
    * @ORM\Column(name="remember_token", type="string", nullable=true)
    */
   protected $rememberToken;
+
+  /**
+   * @ORM\Column(type="string", nullable=true)
+   */
+  protected $avatar; 
+
+  /**
+   * @var ArrayCollection
+   * @ORM\ManyToOne(targetEntity="ApiArchitect\Auth\Entities\Social\Provider", cascade={"persist","merge","remove"})
+   */
+  protected $provider;
+
+  /**
+   * @ORM\Column(type="integer", unique=false, nullable=true)
+   */
+  protected $providerId;
+
+  /**
+   * @ORM\Column(type="integer", unique=false, nullable=true)
+   */
+  protected $OTP;
 
   /**
    * User constructor.
@@ -217,6 +239,104 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
     $this->permissions = $permissions;
     return $this;
   }
+
+  /**
+   * @return mixed
+   */
+  public function getAvatar() {
+    return $this->avatar;
+  }
+
+  /**
+   * @param mixed $avatar
+   * @return User
+   */
+  public function setAvatar($avatar) {
+    $this->avatar = $avatar;
+    return $this;
+  }
+
+  /**
+   * Get the nickname / username for the user.
+   *
+   * @return string
+   */
+  public function getNickname()
+  {
+    return $this->username;
+  }
+
+  /**
+   * Gets the value of provider.
+   *
+   * @return mixed
+   */
+  public function getProvider()
+  {
+      return $this->provider;
+  }
+
+  /**
+   * Sets the value of provider.
+   *
+   * @param mixed $provider the provider
+   *
+   * @return self
+   */
+  public function setProvider($provider)
+  {
+      $this->provider = $provider;
+
+      return $this;
+  }
+
+  /**
+   * Gets the value of providerId.
+   *
+   * @return mixed
+   */
+  public function getProviderId()
+  {
+      return $this->providerId;
+  }
+
+  /**
+   * Sets the value of providerId.
+   *
+   * @param mixed $providerId the provider id
+   *
+   * @return self
+   */
+  public function setProviderId($providerId)
+  {
+      $this->providerId = $providerId;
+
+      return $this;
+  }
+
+  /**
+   * Gets the value of OTP.
+   *
+   * @return mixed
+   */
+  public function getOTP()
+  {
+      return $this->OTP;
+  }
+
+  /**
+   * Sets the value of OTP.
+   *
+   * @param mixed $OTP the 
+   *
+   * @return self
+   */
+  public function setOTP($OTP)
+  {
+      $this->OTP = $OTP;
+
+      return $this;
+  }  
 
   /**
    * Get the identifier that will be stored in the subject claim of the JWT

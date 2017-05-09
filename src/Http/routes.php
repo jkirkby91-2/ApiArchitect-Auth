@@ -12,12 +12,12 @@ $this->app->get('/auth/password/reset/{token}', 'ApiArchitect\Auth\Http\Controll
 
 $this->app->get('/auth/refresh', 'ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController@refresh');
 
-$this->app->get('auth/oauth/facebook/redirect', 'ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController@redirectToProvider');
-$this->app->get('auth/oauth/facebook/callback', 'ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController@handleProviderCallback');
+$this->app->get('auth/oauth/{provider}/redirect', 'ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController@redirectToProvider');
+$this->app->get('auth/oauth/{provider}/callback', 'ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController@handleProviderCallback');
 
 $this->app->post('auth/register', 'ApiArchitect\Auth\Http\Controllers\User\UserController@register');
 
-$this->app->group(['middleware' => 'jwt.auth'], function ($app){
+$this->app->group(['middleware' => ['before' => 'psr7adapter', 'after' => 'apiarchitect.auth']], function ($app){
     resource('user','ApiArchitect\Compass\Http\Controllers\User\UserController');
 });
 

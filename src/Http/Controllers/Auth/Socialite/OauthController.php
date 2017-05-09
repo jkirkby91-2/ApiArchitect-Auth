@@ -4,6 +4,7 @@ namespace ApiArchitect\Auth\Http\Controllers\Auth\Socialite;
 
 use Socialite;
 use Tymon\JWTAuth\JWTAuth;
+use ApiArchitect\Auth\Entities\User;
 use Laravel\Socialite\SocialiteManager;
 use ApiArchitect\Auth\Contracts\SocialiteOauthContract;
 use ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController;
@@ -31,7 +32,7 @@ class OauthController extends AuthenticateController implements SocialiteOauthCo
      *
      * @return Response
      */
-    public function redirectToProvider($provider='facebook')
+    public function redirectToProvider($provider)
     {
       return $this->socialiteManager->with($provider)->stateless()->redirect();
     }
@@ -44,11 +45,29 @@ class OauthController extends AuthenticateController implements SocialiteOauthCo
      *
      * @return Response
      */
-    public function handleProviderCallback($provider='facebook')
+    public function handleProviderCallback($provider)
     {
       $oauthUser = $this->socialiteManager->with($provider)->stateless()->user();
 
-      $x = $this->repository->findOrCreateuser($oauthUser);
+      $userEntity = new User(
+        mt_srand(microtime(true)),
+        $oauthUser->getEmail(),
+        $oauthUser->getName(),
+        $oauthUser->getNickname()
+      );
+
+      $providerEntity = app()
+        ->make('em')
+        ->getRepository('\ApiArchitect\Auth\Entities\Social\Provider')
+        ->findOneBy(['name' => $provider]);
+
+      $userEntity->setProvider($providerEntity);
+      $userEntity->setProviderId($oauthUser->getId());
+      $userEntity->setOTP(1);
+      $userEntity->setAvatar($oauthUser->getAvatar());
+
+      $userEntity = $this->repository->findOrCreateUser($userEntity);
+
     }
 
 }
