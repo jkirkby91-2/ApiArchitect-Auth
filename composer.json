@@ -11,7 +11,7 @@
         "jkirkby91/LumenDoctrineComponent": "dev-master",
         "jkirkby91/LumenRestServerComponent": "dev-master",
         "tymon/jwt-auth": "1.0.0-beta.3",
-        "apiarchitect/compass": "dev-master",        
+        "apiarchitect/compass": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",
