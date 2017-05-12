@@ -11,11 +11,11 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
- * Class Authenticate
+ * Class AuthenticateMiddleware
  * @package ApiArchitect\Auth\Http\Middleware
  * @TODO do we need this?
  */
-class Authenticate
+class AuthenticateMiddleware
 {
 
     /**

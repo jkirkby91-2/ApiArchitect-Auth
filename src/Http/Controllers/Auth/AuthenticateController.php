@@ -11,6 +11,8 @@ use Spatie\Fractal\ArraySerializer AS ArraySerialization;
 use ApiArchitect\Auth\Contracts\JWTAuthControllerContract;
 use Jkirkby91\LumenRestServerComponent\Libraries\ResourceResponseTrait;
 use Jkirkby91\LumenRestServerComponent\Http\Controllers\RestController;
+use Jkirkby91\Boilers\RestServerBoiler\TransformerContract AS ObjectTransformer;
+use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
 
 /**
  * Class AuthenticateController

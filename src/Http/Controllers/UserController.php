@@ -71,12 +71,11 @@ final class UserController extends ResourceController {
     $userEntity = new User(
       $userRegDetails['password'],
       $userRegDetails['email'],
-      json_encode([
-        'firstname' => $userRegDetails['firstname'],
-        'lastname'  => $userRegDetails['lastname']
-        ]),
+      $userRegDetails['firstname'] . $userRegDetails['lastname'],
       $userRegDetails['username']
     );
+
+    // $userEntity->setProvider('local'); @TODO SET PROVIDER
 
     $targetRole = app()
       ->make('em')
