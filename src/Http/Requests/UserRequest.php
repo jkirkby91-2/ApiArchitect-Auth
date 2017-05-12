@@ -24,8 +24,8 @@ class UserRequest extends AbstractValidateRequest
     {
         return [
             'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:ApiArchitect\CompassEntities\User,email',
-            'username' => 'required|max:255|unique:ApiArchitect\CompassEntities\User,username',
+            'email' => 'required|email|max:255|unique:ApiArchitect\Auth\Entities\User,email',
+            'username' => 'required|max:255|unique:ApiArchitect\Auth\Entities\User,username',
             'password' => 'required|confirmed|min:8',
         ];
     }
