@@ -18,8 +18,8 @@ $this->app->get('auth/oauth/{provider}/callback', 'ApiArchitect\Auth\Http\Contro
 $this->app->post('auth/register', 'ApiArchitect\Auth\Http\Controllers\UserController@register');
 
 $this->app->group(['middleware' => ['before' => 'psr7adapter', 'after' => 'apiarchitect.auth']], function ($app){
-    resource('user','ApiArchitect\Compass\Http\Controllers\User\UserController');
+    resource('user','ApiArchitect\Auth\Http\Controllers\User\UserController');
 });
 
-$this->app->post('auth/check/username', 'ApiArchitect\Compass\Auth\Controllers\UserController@checkUniqueUserName');
-$this->app->post('auth/check/email', 'ApiArchitect\Compass\Auth\Controllers\UserController@checkUniqueEmail');
+$this->app->post('auth/check/username', 'ApiArchitect\Auth\Controllers\User\UserController@checkUniqueUserName');
+$this->app->post('auth/check/email', 'ApiArchitect\Auth\Controllers\User\UserController@checkUniqueEmail');
