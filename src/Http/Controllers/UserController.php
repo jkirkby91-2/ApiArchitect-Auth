@@ -74,7 +74,7 @@ final class UserController extends ResourceController {
       $userRegDetails['username'],
       $userRegDetails['role'],
       $userRegDetails['password']
-      );
+    );
 
     $token = $this->auth->fromUser($userEntity);
 

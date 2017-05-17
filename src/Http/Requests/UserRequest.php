@@ -29,14 +29,4 @@ class UserRequest extends AbstractValidateRequest
             'password' => 'required|confirmed|min:8',
         ];
     }
-
-    // /**
-    //  * @param ServerRequestInterface $request
-    //  * @return mixed|void
-    //  */
-    // public function validate(ServerRequestInterface $request)
-    // {
-    //     $validator = app()->make('validator');
-    //     $validator->validate();
-    // }
 }

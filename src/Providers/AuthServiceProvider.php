@@ -91,7 +91,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->app->routeMiddleware([
             'psr7adapter' => \Jkirkby91\IlluminateRequestPSR7Adapter\Middleware\PSR7AdapterMiddleware::class,
-            'apiarchitect.auth' => \ApiArchitect\Auth\Http\Middleware\Authenticate::class,
+
+            'apiarchitect.auth' => \ApiArchitect\Auth\Http\Middleware\AuthenticateMiddleware::class,
             'apiarchitect.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
             // 'role' => \ApiArchitect\Auth\Http\Controllers\Middleware\RoleMiddleware::class,
         ]);
