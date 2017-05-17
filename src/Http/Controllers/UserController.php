@@ -27,7 +27,7 @@ final class UserController extends ResourceController {
     $user = $this->auth->toUser();
 
     $resource = $this->item($user)
-          ->transformWith(new \ApiArchitect\Auth\Http\Transformers\UserTransformer())
+          ->transformWith($this->transformer)
           ->serializeWith(new ArraySerialization())
           ->toArray();
 
@@ -67,33 +67,19 @@ final class UserController extends ResourceController {
         throw new Exceptions\UnprocessableEntityException('Un-authorised role type');
       }
     }
-    
-    $userEntity = new User(
-      $userRegDetails['password'],
+
+    $userEntity = $this->repository->findOrCreateUser(
       $userRegDetails['email'],
-      json_encode([
-        'firstname' => $userRegDetails['firstname'],
-        'lastname'  => $userRegDetails['lastname']
-        ]),
-      $userRegDetails['username']
-    );
+      $userRegDetails['name'],
+      $userRegDetails['username'],
+      $userRegDetails['role'],
+      $userRegDetails['password']
+      );
 
-    $targetRole = app()
-      ->make('em')
-      ->getRepository('\ApiArchitect\Auth\Entities\Role')
-      ->findOneBy(['name' => $userRegDetails['role']]);
+    $token = $this->auth->fromUser($userEntity);
 
-    if (is_null($targetRole)) {
-      throw new Exceptions\UnprocessableEntityException('target role not found');
-    } else {
-      $userEntity->addRoles($targetRole);
-    }
-
-    $user  = $this->repository->store($userEntity);
-    $token = app()->make('auth')->fromUser($user);
-
-    $resource = $this->item($user)
-          ->transformWith(new \ApiArchitect\Auth\Http\Transformers\UserTransformer())
+    $resource = $this->item($userEntity)
+          ->transformWith($this->transformer)
           ->addMeta(['token' => $token])
           ->addMeta(['role' => $targetRole->getName()])
           ->serializeWith(new ArraySerialization());
@@ -170,12 +156,9 @@ final class UserController extends ResourceController {
       throw new Exceptions\UnprocessableEntityException('no email defined');
     }
 
-    $email = app()
-      ->make('em')
-      ->getRepository('\ApiArchitect\Auth\Entities\User')
-      ->findOneBy(['email' => $emailTarget['email']]);
+    $userEntity = $this->repository->findUserFromEmail($emailTarget['email']);
 
-    if (is_null($email)) {
+    if (is_null($userEntity)) {
       return true;
     } else {
       return false;
@@ -194,12 +177,9 @@ final class UserController extends ResourceController {
       throw new Exceptions\UnprocessableEntityException('no username defined');
     }
 
-    $username = app()
-      ->make('em')
-      ->getRepository('\ApiArchitect\Auth\Entities\User')
-      ->findOneBy(['username' => $userNameTarget['username']]);
+    $userEntity = $this->repository->FindUserFromUserName($userNameTarget['username']);
 
-    if (is_null($username)) {
+    if (is_null($userEntity)) {
       return true;
     } else {
       return false;

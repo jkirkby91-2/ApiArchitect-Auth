@@ -15,11 +15,11 @@ $this->app->get('/auth/refresh', 'ApiArchitect\Auth\Http\Controllers\Auth\Authen
 $this->app->get('auth/oauth/{provider}/redirect', 'ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController@redirectToProvider');
 $this->app->get('auth/oauth/{provider}/callback', 'ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController@handleProviderCallback');
 
-$this->app->post('auth/register', 'ApiArchitect\Auth\Http\Controllers\User\UserController@register');
+$this->app->post('auth/register', 'ApiArchitect\Auth\Http\Controllers\UserController@register');
 
 $this->app->group(['middleware' => ['before' => 'psr7adapter', 'after' => 'apiarchitect.auth']], function ($app){
     resource('user','ApiArchitect\Auth\Http\Controllers\User\UserController');
 });
 
-$this->app->post('auth/check/username', 'ApiArchitect\Auth\Controllers\User\UserController@checkUniqueUserName');
-$this->app->post('auth/check/email', 'ApiArchitect\Auth\Controllers\User\UserController@checkUniqueEmail');
+$this->app->post('auth/check/username', 'ApiArchitect\Auth\Controllers\UserController@checkUniqueUserName');
+$this->app->post('auth/check/email', 'ApiArchitect\Auth\Controllers\UserController@checkUniqueEmail');

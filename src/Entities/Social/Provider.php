@@ -10,7 +10,7 @@ use Jkirkby91\DoctrineSchemas\Entities\Thing;
  * Class Provider
  *
  * @package ApiArchitect\Auth\Entities\Social
- * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\ProviderRepository")
+ * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\SocialAccountRepository")
  * @ORM\Table(name="provider", indexes={@ORM\Index(name="search_idx", columns={"name"})})
  * @Gedmo\Loggable
  * @ORM\HasLifecycleCallbacks

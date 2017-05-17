@@ -18,17 +18,43 @@ class UserRepository extends AbstractRepository implements ResourceRepositoryCon
 {
     use ResourceRepositoryTrait;
 
-    public function findOrCreateUser(User $target)
+    public function findOrCreateOauthUser($oauthUser)
     {
-      $userEntity = $this->findOneBy(['email' => $target->getEmail()]);
+      $userEntity = $this->findUserFromEmail($oauthUser->getEmail());
 
       if(!empty($userEntity)){
         return $userEntity;
-      }
-
-      $userEntity = $this->store($target);
+      } else {
+        $userEntity = app()->make('apiarchitect.account.service')->createNewAccount(
+          $oauthUser->getEmail(),
+          $oauthUser->getName(),
+          $oauthUser->getNickName(),
+          null,
+          null,
+          $oauthUser->getAvatar()
+        );
+      };
 
       return $userEntity;      
+    }
+
+    public function findOrCreateUser($email,$name,$username,$role,$password,$avatar=null)
+    {
+      $userEntity = $this->findUserFromEmail($oauthUser->getEmail());
+
+      if(!empty($userEntity)){
+        return $userEntity;
+      } else {
+        $userEntity = app()->make('apiarchitect.account.service')->createNewAccount(
+          $email,
+          $name,
+          $username,
+          $password,
+          $avatar
+        );
+      };
+
+      return $userEntity;  
     }
 
     /**
@@ -69,4 +95,15 @@ class UserRepository extends AbstractRepository implements ResourceRepositoryCon
         return $entity;
     }
 
+    public function findUserFromEmail($email)
+    {
+      $userEntity = $this->findOneBy(['email' => $email]);
+      return $userEntity;
+    }
+
+    public function FindUserFromUserName($username)
+    {
+      $userEntity = $this->findOneBy(['username' => $username]);
+      return $userEntity;
+    }
 }

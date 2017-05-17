@@ -9,6 +9,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use LaravelDoctrine\ACL\Mappings as ACL;
 use Jkirkby91\DoctrineSchemas\Entities\Thing;
 use Doctrine\Common\Collections\ArrayCollection;
+use ApiArchitect\Auth\Entities\Social\SocialAccount;
 use LaravelDoctrine\ACL\Roles\HasRoles as HasRolesTrait;
 use Laravel\Socialite\Contracts\User AS SocialUserContract;
 use LaravelDoctrine\ACL\Contracts\HasRoles as HasRolesContract;
@@ -43,7 +44,7 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
 
   /**
    * @var ArrayCollection
-   * @ORM\ManyToMany(targetEntity="\ApiArchitect\Auth\Entities\Role", cascade={"all"}, fetch="EAGER")
+   * @ORM\ManyToMany(targetEntity="\ApiArchitect\Auth\Entities\Role", cascade={"all"}, fetch="EXTRA_LAZY")
    * @ORM\JoinTable(name="user_roles",
    *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
    *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", unique=false)})
@@ -82,20 +83,25 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
   protected $avatar; 
 
   /**
-   * @var ArrayCollection
-   * @ORM\ManyToOne(targetEntity="ApiArchitect\Auth\Entities\Social\Provider", cascade={"persist","merge","remove"})
-   */
-  protected $provider;
-
-  /**
-   * @ORM\Column(type="string", unique=false, nullable=true)
-   */
-  protected $providerUid;
-
-  /**
    * @ORM\Column(type="integer", unique=false, nullable=true)
    */
   protected $OTP;
+
+  /**
+   * @var \Doctrine\Common\Collections\Collection|UserGroup[]
+   *
+   * @ORM\ManyToMany(targetEntity="\ApiArchitect\Auth\Entities\Social\SocialAccount", inversedBy="user", fetch="EXTRA_LAZY")
+   * @ORM\JoinTable(
+   *  name="user_socialaccount",
+   *  joinColumns={
+   *      @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+   *  },
+   *  inverseJoinColumns={
+   *      @ORM\JoinColumn(name="user_social_account_id", referencedColumnName="id")
+   *  }
+   * )
+   */
+  protected $socialAccounts;
 
   /**
    * User constructor.
@@ -103,15 +109,15 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
    * @param $email
    * @param $name
    */
-  public function __construct($password, $email, $name, $username)
+  public function __construct($email, $name, $username)
   {
     $this->setName($name);
     $this->setEmail($email);
     $this->setEnabled(true);
     $this->setNodeType('User');
-    $this->setPassword($password);
     $this->setUserName($username);
     $this->roles = new ArrayCollection();
+    $this->socialAccounts = new ArrayCollection();
   }
 
   /**
@@ -267,54 +273,6 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
   }
 
   /**
-   * Gets the value of provider.
-   *
-   * @return mixed
-   */
-  public function getProvider()
-  {
-      return $this->provider;
-  }
-
-  /**
-   * Sets the value of provider.
-   *
-   * @param mixed $provider the provider
-   *
-   * @return self
-   */
-  public function setProvider($provider)
-  {
-      $this->provider = $provider;
-
-      return $this;
-  }
-
-  /**
-   * Gets the value of providerId.
-   *
-   * @return mixed
-   */
-  public function getProviderId()
-  {
-      return $this->providerUid;
-  }
-
-  /**
-   * Sets the value of providerId.
-   *
-   * @param mixed $providerId the provider id
-   *
-   * @return self
-   */
-  public function setProviderId($providerId)
-  {
-      $this->providerUid = $providerId;
-
-      return $this;
-  }
-
-  /**
    * Gets the value of OTP.
    *
    * @return mixed
@@ -336,7 +294,31 @@ class User extends Thing implements AuthenticatableContract, JWTSubject, CanRese
       $this->OTP = $OTP;
 
       return $this;
-  }  
+  }
+
+  /**
+   * @param UserGroup $userGroup
+   */
+  public function addSocialAccount(SocialAccount $socialAccount)
+  {
+    if ($this->socialAccounts->contains($socialAccount)) {
+        return;
+    }
+    $this->socialAccounts->add($socialAccount);
+    $socialAccount->addUser($this);
+  }
+  
+  /**
+   * @param UserGroup $userGroup
+   */
+  public function removeSocialAccount(UserGroup $socialAccount)
+  {
+    if (!$this->socialAccounts->contains($socialAccount)) {
+        return;
+    }
+    $this->socialAccounts->removeElement($socialAccount);
+    $socialAccount->removeUser($this);
+  }
 
   /**
    * Get the identifier that will be stored in the subject claim of the JWT

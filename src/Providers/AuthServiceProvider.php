@@ -58,6 +58,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->app->register(\Jkirkby91\LumenDoctrineComponent\Providers\LumenDoctrineServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\UserRepositoryServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\PasswordResetsRepositoryServiceProvider::class);
+        $this->app->register(\ApiArchitect\Auth\Providers\SocialAccountRepositoryServiceProvider::class);
+        $this->app->register(\ApiArchitect\Auth\Providers\AccountServiceProvider::class);
 
         if(getenv('SOCIALITE_ENABLED') === 'TRUE') {        
           $this->app->register(\ApiArchitect\Auth\Providers\SocialiteServiceProvider::class);
@@ -89,7 +91,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->app->routeMiddleware([
             'psr7adapter' => \Jkirkby91\IlluminateRequestPSR7Adapter\Middleware\PSR7AdapterMiddleware::class,
-            'apiarchitect.auth' => \ApiArchitect\Auth\Http\Controllers\Authenticate::class,
+            'apiarchitect.auth' => \ApiArchitect\Auth\Http\Middleware\Authenticate::class,
             'apiarchitect.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
             // 'role' => \ApiArchitect\Auth\Http\Controllers\Middleware\RoleMiddleware::class,
         ]);
@@ -100,8 +102,8 @@ class AuthServiceProvider extends ServiceProvider
       */
      public function registerControllers()
      {
-         $this->app->bind(\ApiArchitect\Auth\Http\Controllers\User\UserController::class, function($app) {
-             return new \ApiArchitect\Auth\Http\Controllers\User\UserController(
+         $this->app->bind(\ApiArchitect\Auth\Http\Controllers\UserController::class, function($app) {
+             return new \ApiArchitect\Auth\Http\Controllers\UserController(
                  $app['em']->getRepository(\ApiArchitect\Auth\Entities\User::class),
                  new \ApiArchitect\Auth\Http\Transformers\UserTransformer
              );
@@ -119,7 +121,6 @@ class AuthServiceProvider extends ServiceProvider
                   new \ApiArchitect\Auth\Http\Transformers\UserTransformer
                );
            });
-
      }
 
 }

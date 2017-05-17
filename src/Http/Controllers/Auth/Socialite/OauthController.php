@@ -66,24 +66,22 @@ class OauthController extends RestController implements SocialiteOauthContract
     {
       $oauthUser = $this->socialiteManager->with($provider)->stateless()->user();
 
-      $userEntity = new User(
-        mt_srand(microtime(true)),
-        $oauthUser->getEmail(),
-        $oauthUser->getName(),
-        $oauthUser->getNickname()
-      );
+      $userEntity = $this->repository->findOrCreateOauthUser($oauthUser);
 
       $providerEntity = app()
         ->make('em')
         ->getRepository('\ApiArchitect\Auth\Entities\Social\Provider')
         ->findOneBy(['name' => $provider]);
 
-      $userEntity->setProvider($providerEntity);
-      $userEntity->setProviderId($oauthUser->getId());
-      $userEntity->setOTP(1);
-      $userEntity->setAvatar($oauthUser->getAvatar());
+      if(is_null($providerEntity))
+      {
+        throw new \Exception('Oauth Provider not found');
+      }
 
-      $userEntity = $this->repository->findOrCreateUser($userEntity);
+      $socialAccountEntity = app()
+        ->make('em')
+        ->getRepository('\ApiArchitect\Auth\Entities\Social\SocialAccount')
+        ->findOrCreateSocialAccount($providerEntity, $oauthUser, $userEntity);  
 
       $token = $this->auth->fromUser($userEntity);
       
