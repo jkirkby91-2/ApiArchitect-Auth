@@ -22,6 +22,6 @@ interface SocialiteOauthContract
      *
      * @return Response
      */
-    public function handleProviderCallback($provider);
+    public function handleProviderCallback(ServerRequestInterface $request, $provider);
     
 }

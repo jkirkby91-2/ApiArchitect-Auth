@@ -22,7 +22,7 @@ class UserRepository extends AbstractRepository implements ResourceRepositoryCon
     {
       $userEntity = $this->findUserFromEmail($oauthUser->getEmail());
 
-      if(!empty($userEntity)){
+      if(!empty($userEntity) || !is_null($userEntity)){
         return $userEntity;
       } else {
         $userEntity = app()->make('apiarchitect.account.service')->createNewAccount(

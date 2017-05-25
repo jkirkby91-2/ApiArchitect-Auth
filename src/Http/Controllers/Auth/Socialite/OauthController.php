@@ -6,6 +6,7 @@ use Socialite;
 use Tymon\JWTAuth\JWTAuth;
 use ApiArchitect\Auth\Entities\User;
 use Laravel\Socialite\SocialiteManager;
+use Psr\Http\Message\ServerRequestInterface;
 use ApiArchitect\Auth\Contracts\SocialiteOauthContract;
 use Spatie\Fractal\ArraySerializer AS ArraySerialization;
 use Jkirkby91\LumenRestServerComponent\Libraries\ResourceResponseTrait;
@@ -51,7 +52,7 @@ class OauthController extends RestController implements SocialiteOauthContract
      */
     public function redirectToProvider($provider)
     {
-      return $this->socialiteManager->with($provider)->stateless()->redirect();
+      return $this->socialiteManager->with($provider)->stateless()->redirect()->getTargetUrl();
     }
 
     /**
@@ -62,9 +63,13 @@ class OauthController extends RestController implements SocialiteOauthContract
      *
      * @return Response
      */
-    public function handleProviderCallback($provider)
+    public function handleProviderCallback(ServerRequestInterface $request, $provider)
     {
-      $oauthUser = $this->socialiteManager->with($provider)->stateless()->user();
+      $payload = $request->getParsedBody();
+
+      $token = $this->socialiteManager->with($provider)->stateless()->getAccessTokenResponse($payload['code']);
+
+      $oauthUser = $this->socialiteManager->with($provider)->stateless()->userFromToken($token['access_token']);
 
       $userEntity = $this->repository->findOrCreateOauthUser($oauthUser);
 
