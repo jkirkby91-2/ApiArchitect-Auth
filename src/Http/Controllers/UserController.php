@@ -17,16 +17,9 @@ use Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController;
  */
 final class UserController extends ResourceController {
 
-    /**
-     * @var $auth
-     */
-    protected $auth;
-
   public function index(ServerRequestInterface $request) {
 
-    $user = $this->auth->toUser();
-
-    $resource = $this->item($user)
+    $resource = $this->item($this->user)
           ->transformWith($this->transformer)
           ->serializeWith(new ArraySerialization())
           ->toArray();

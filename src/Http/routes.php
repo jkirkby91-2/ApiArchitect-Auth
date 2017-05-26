@@ -5,7 +5,7 @@ $this->app->group(['middleware' => ['before' => 'psr7adapter', 'after' => 'apiar
 });
 
 $this->app->group(['middleware' => ['before' => 'psr7adapter', 'after' => 'apiarchitect.auth']], function ($app){
-    resource('user','ApiArchitect\Auth\Http\Controllers\User\UserController');
+    resource('user','ApiArchitect\Auth\Http\Controllers\UserController');
 });
 
 $this->app->post('/auth/register', 'ApiArchitect\Auth\Http\Controllers\UserController@register');
