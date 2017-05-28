@@ -31,9 +31,8 @@ class UserTransformer extends TransformerAbstract implements TransformerContract
             'status'    => 'success',
             'data' => [
                 'uid'           => $user->getId(),
-                'avatar'        => 'https://fuuse.net/wp-content/uploads/2016/02/avatar-placeholder.png',
-                'firstname'     => $name['firstname'],
-                'lastname'      => $name['lastname'],
+                'avatar'        => $user->getAvatar(),
+                'name'          => $user->getName(),
                 'email'         => $user->getEmail(),
                 'username'      => $user->getUserName(),
                 'roles'         => $rolesArray

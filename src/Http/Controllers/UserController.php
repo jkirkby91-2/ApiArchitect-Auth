@@ -24,9 +24,7 @@ final class UserController extends ResourceController {
 
   public function index(ServerRequestInterface $request) {
 
-    $user = $this->auth->toUser();
-
-    $resource = $this->item($user)
+    $resource = $this->item($this->user)
           ->transformWith($this->transformer)
           ->serializeWith(new ArraySerialization())
           ->toArray();
