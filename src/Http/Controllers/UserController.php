@@ -17,11 +17,6 @@ use Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController;
  */
 final class UserController extends ResourceController {
 
-    /**
-     * @var $auth
-     */
-    protected $auth;
-
   public function index(ServerRequestInterface $request) {
 
     $resource = $this->item($this->user)
