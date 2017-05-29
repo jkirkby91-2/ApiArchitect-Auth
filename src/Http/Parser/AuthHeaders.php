@@ -4,6 +4,7 @@ namespace ApiArchitect\Auth\Http\Parser;
 
 use Psr\Http\Message\ServerRequestInterface;
 use ApiArchitect\Auth\Contracts\JWTParserContract;
+use Jkirkby91\Boilers\RestServerBoiler\Exceptions\UnauthorizedHttpException;
 
 class AuthHeaders implements JWTParserContract
 {
@@ -47,8 +48,12 @@ class AuthHeaders implements JWTParserContract
         $header = $request->getHeader($this->header) ?: $this->fromAltHeaders($request);
         //@TODO some logic to make sure we onlyget one header, or check each header that matches
 
-        if ($header[0] && stripos($header[0], $this->prefix) === 0) {
-            return trim(str_ireplace($this->prefix, '', $header[0]));
+        try {
+          if ($header[0] && stripos($header[0], $this->prefix) === 0) {
+              return trim(str_ireplace($this->prefix, '', $header[0]));
+          }
+        } catch (\ErrorException $e) {
+          throw new UnauthorizedHttpException;
         }
     }
 
