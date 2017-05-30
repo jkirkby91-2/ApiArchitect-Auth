@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping AS ORM;
 use Gedmo\Mapping\Annotation AS Gedmo;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use LaravelDoctrine\ACL\Contracts\Role as RoleContract;
-use Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity;
+use ApiArchitect\Compass\Entities\AbstractResourceEntity;
 
 /**
  * Class Role
@@ -20,7 +20,7 @@ use Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity;
  * @ORM\Table(name="role", indexes={@ORM\Index(name="name_idx", columns={"name"})})
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\RoleRepository")
  */
-class Role extends LumenDoctrineEntity implements RoleContract
+class Role extends AbstractResourceEntity implements RoleContract
 {
 
     /**

@@ -5,8 +5,9 @@ namespace ApiArchitect\Auth\Http\Middleware;
 use Closure;
 use Psr\Http\Message\ServerRequestInterface;
 use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
+use ApiArchitect\Compass\Http\Middleware\AbstractMiddleware;
 
-class RoleMiddleware
+class RoleMiddleware extends AbstractMiddleware
 {
 
     /**

@@ -9,13 +9,14 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use ApiArchitect\Compass\Http\Middleware\AbstractMiddleware;
 
 /**
  * Class AuthenticateMiddleware
  * @package ApiArchitect\Auth\Http\Middleware
  * @TODO do we need this?
  */
-class AuthenticateMiddleware
+class AuthenticateMiddleware extends AbstractMiddleware
 {
 
     /**

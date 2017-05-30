@@ -5,7 +5,7 @@ namespace ApiArchitect\Auth\Entities\Social;
 use Doctrine\ORM\Mapping as ORM;
 use ApiArchitect\Auth\Entities\User;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Jkirkby91\DoctrineSchemas\Entities\Thing;
+use ApiArchitect\Compass\Entities\AbstractResourceEntity;
 use ApiArchitect\Auth\Entities\Social\Provider;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -21,7 +21,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @package ApiArchitect\Auth\Entities\Social
  * @author James Kirkby <me@jameskirkby.com>
  */
-class SocialAccount extends Thing 
+class SocialAccount extends AbstractResourceEntity 
 {
 
   /**

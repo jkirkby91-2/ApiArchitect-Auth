@@ -10,11 +10,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use ApiArchitect\Auth\Contracts\SocialiteOauthContract;
 use Spatie\Fractal\ArraySerializer AS ArraySerialization;
 use Jkirkby91\LumenRestServerComponent\Libraries\ResourceResponseTrait;
-use Jkirkby91\LumenRestServerComponent\Http\Controllers\RestController;
+use ApiArchitect\Compass\Http\Controllers\RestApi;
 use Jkirkby91\Boilers\RestServerBoiler\TransformerContract AS ObjectTransformer;
 use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
 
-class OauthController extends RestController implements SocialiteOauthContract
+class OauthController extends RestApi implements SocialiteOauthContract
 {
 
     use ResourceResponseTrait;

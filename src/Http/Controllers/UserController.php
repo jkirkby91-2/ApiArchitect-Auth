@@ -7,7 +7,7 @@ use ApiArchitect\Auth\Entities\User;
 use Psr\Http\Message\ServerRequestInterface;
 use Jkirkby91\Boilers\RestServerBoiler\Exceptions;
 use Spatie\Fractal\ArraySerializer AS ArraySerialization;
-use Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController;
+use ApiArchitect\Compass\Http\Controllers\RestApi;
 
 /**
  * Class USerController
@@ -15,7 +15,8 @@ use Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController;
  * @package app\Http\Controllers
  * @author James Kirkby <jkirkby91@gmail.com>
  */
-final class UserController extends ResourceController {
+final class UserController extends RestApi
+{
 
   public function index(ServerRequestInterface $request) {
 

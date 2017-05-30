@@ -4,7 +4,7 @@ namespace ApiArchitect\Auth\Entities\Social;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Jkirkby91\DoctrineSchemas\Entities\Thing;
+use ApiArchitect\Compass\Entities\AbstractResourceEntity;
 
 /**
  * Class Provider
@@ -18,7 +18,7 @@ use Jkirkby91\DoctrineSchemas\Entities\Thing;
  * @package ApiArchitect\Auth\Entities\Social
  * @author James Kirkby <me@jameskirkby.com>
  */
-class Provider extends Thing 
+class Provider extends AbstractResourceEntity 
 {
     /**
      * Provider constructor.

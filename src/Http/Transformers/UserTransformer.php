@@ -2,8 +2,7 @@
 
 namespace ApiArchitect\Auth\Http\Transformers;
 
-use League\Fractal\TransformerAbstract;
-use Jkirkby91\Boilers\RestServerBoiler\TransformerContract;
+use ApiArchitect\Http\Transformers\AbstractTransformer;
 
 /**
  * Class UserTransformer
@@ -11,7 +10,7 @@ use Jkirkby91\Boilers\RestServerBoiler\TransformerContract;
  * @package ApiArchitect\Auth\Http\Transformers
  * @author James Kirkby <me@jameskirkby.com>
  */
-class UserTransformer extends TransformerAbstract implements TransformerContract
+class UserTransformer extends AbstractTransformer
 {
     /**
      * @param $user

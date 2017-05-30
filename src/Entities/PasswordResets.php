@@ -3,6 +3,7 @@
 namespace ApiArchitect\Auth\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use ApiArchitect\Compass\Entities\AbstractResourceEntity;
 
 /**
  * Class PasswordResets
@@ -15,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\PasswordResetsRepository")
  * @ORM\HasLifeCycleCallBacks
  */
-class PasswordResets extends \Jkirkby91\LumenDoctrineComponent\Entities\LumenDoctrineEntity
+class PasswordResets extends AbstractResourceEntity
 {
 
     /**

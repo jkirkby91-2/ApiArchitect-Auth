@@ -7,7 +7,6 @@ use ApiArchitect\Auth\Entities\Role;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use LaravelDoctrine\ACL\Mappings as ACL;
-use Jkirkby91\DoctrineSchemas\Entities\Thing;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiArchitect\Auth\Entities\Social\SocialAccount;
 use LaravelDoctrine\ACL\Roles\HasRoles as HasRolesTrait;
@@ -19,6 +18,7 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use LaravelDoctrine\ACL\Contracts\HasPermissions as HasPermissionContract;
 use LaravelDoctrine\ACL\Permissions\HasPermissions as HasPermissionsTrait;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use ApiArchitect\Compass\Entities\AbstractResourceEntity;
 
 /**
  * Class User
@@ -32,7 +32,7 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
  * @package app\Http\Controllers
  * @author James Kirkby <jkirkby91@gmail.com>
  */
-class User extends Thing implements AuthenticatableContract, JWTSubject, CanResetPasswordContract, HasRolesContract, HasPermissionContract,SocialUserContract
+class User extends AbstractResourceEntity implements AuthenticatableContract, JWTSubject, CanResetPasswordContract, HasRolesContract, HasPermissionContract,SocialUserContract
 {
 
   use HasRolesTrait, HasPermissionsTrait, AuthenticatableTrait, CanResetPasswordTrait;

@@ -4,13 +4,14 @@ namespace ApiArchitect\Auth\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
+use ApiArchitect\Compass\Http\Middleware\AbstractMiddleware;
 
 /**
  * Class RedirectIfAuthenticated
  * @package app\Middleware
  * @TODO do we need this?
  */
-class RedirectIfAuthenticated
+class RedirectIfAuthenticated extends AbstractMiddleware
 {
     /**
      * The Guard implementation.

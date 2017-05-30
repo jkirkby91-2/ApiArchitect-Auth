@@ -3,7 +3,7 @@
 namespace ApiArchitect\Auth\Http\Requests;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Jkirkby91\LumenRestServerComponent\Http\Requests\AbstractValidateRequest;
+use ApiArchitect\Compass\Http\Requests\AbstractValidateRequest;
 
 /**
  * Class UserRequest
