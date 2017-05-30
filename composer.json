@@ -12,6 +12,7 @@
         "jkirkby91/LumenRestServerComponent": "dev-master",
         "tymon/jwt-auth": "1.0.0-beta.3",
         "apiarchitect/compass": "dev-master",
+        "apiarchitect/filesystem": "dev-master",        
         "laravel/socialite": "^3.0"
     },
     "require-dev": {

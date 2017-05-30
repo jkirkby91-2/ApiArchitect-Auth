@@ -61,6 +61,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->app->register(\ApiArchitect\Auth\Providers\SocialAccountRepositoryServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\AccountServiceProvider::class);
 
+        $this->app->register(\ApiArchitect\Filesystem\Providers\FileSystemServiceProvider::class);
+
         if(getenv('SOCIALITE_ENABLED') === 'TRUE') {        
           $this->app->register(\ApiArchitect\Auth\Providers\SocialiteServiceProvider::class);
         }
