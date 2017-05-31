@@ -2,7 +2,7 @@
 
 namespace ApiArchitect\Auth\Http\Transformers;
 
-use ApiArchitect\Http\Transformers\AbstractTransformer;
+use ApiArchitect\Compass\Http\Transformers\AbstractTransformer;
 
 /**
  * Class UserTransformer

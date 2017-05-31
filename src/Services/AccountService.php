@@ -31,6 +31,8 @@ class AccountService
     {
       $userEntity->setOTP(1);
       $userEntity->setPassword(md5(microtime(true).$email.$name));
+    } else {
+      $userEntity = $userEntity->setPassword(app()->make('hash')->make($password));
     }
 
     if($role === null)
@@ -44,7 +46,7 @@ class AccountService
       ->findOneBy(['name' => $role]);
 
     if (is_null($roleEntity)) {
-      throw new Exceptions\UnprocessableEntityException('target role not found');
+      throw new \Jkirkby91\Boilers\RestServerBoiler\Exceptions\UnprocessableEntityException('target role not found');
     }
 
     $userEntity->addRoles($roleEntity);

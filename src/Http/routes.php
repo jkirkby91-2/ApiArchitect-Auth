@@ -8,7 +8,10 @@ $this->app->group(['middleware' => ['before' => 'psr7adapter', 'after' => 'apiar
     resource('user','ApiArchitect\Auth\Http\Controllers\UserController');
 });
 
-$this->app->post('/auth/register', 'ApiArchitect\Auth\Http\Controllers\UserController@register');
+$this->app->group(['middleware' => ['before' => 'psr7adapter', 'after' => 'validateRequest:ApiArchitect\Auth\Http\Requests\UserRegistrationRequest']], function ($app)
+{
+  $this->app->post('/auth/register', 'ApiArchitect\Auth\Http\Controllers\UserController@register');
+});
 $this->app->post('/auth/login', 'ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController@authenticate');
 $this->app->post('/auth/logout', 'ApiArchitect\Auth\Http\Controllers\Auth\AuthenticateController@logout');
 

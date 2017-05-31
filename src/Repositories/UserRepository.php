@@ -40,7 +40,7 @@ class UserRepository extends AbstractRepository implements ResourceRepositoryCon
 
     public function findOrCreateUser($email,$name,$username,$role,$password,$avatar=null)
     {
-      $userEntity = $this->findUserFromEmail($oauthUser->getEmail());
+      $userEntity = $this->findUserFromEmail($email);
 
       if(!empty($userEntity)){
         return $userEntity;
@@ -49,6 +49,7 @@ class UserRepository extends AbstractRepository implements ResourceRepositoryCon
           $email,
           $name,
           $username,
+          $role,
           $password,
           $avatar
         );
@@ -63,11 +64,8 @@ class UserRepository extends AbstractRepository implements ResourceRepositoryCon
      */
     public function store(Entity $entity)
     {
-        //@TODO some erro checking/ exception throwing
-        $entity = $this->hashPassword($entity);
         $this->_em->persist($entity);
         $this->_em->flush();
-        //@TODO try catch check if email is unique value then return a formatted response at moment returns geenri sql error
         return $entity;
     }
 
@@ -77,21 +75,8 @@ class UserRepository extends AbstractRepository implements ResourceRepositoryCon
      */
     public function update(Entity $entity)
     {
-        $entity = $this->hashPassword($entity);
         $this->_em->merge($entity);
         $this->_em->flush();
-        //@TODO try catch check if email is unique value then return a formatted response at moment returns geenri sql error
-        return $entity;
-    }
-
-    /**
-     * @param Entity $entity
-     * @return Entity
-     */
-    public function hashPassword(Entity $entity)
-    {
-        $unHashedPass = $entity->getPassword();
-        $entity = $entity->setPassword(app()->make('hash')->make($unHashedPass));
         return $entity;
     }
 

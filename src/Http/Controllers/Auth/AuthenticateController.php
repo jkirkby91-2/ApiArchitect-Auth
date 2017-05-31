@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Spatie\Fractal\ArraySerializer AS ArraySerialization;
 use ApiArchitect\Auth\Contracts\JWTAuthControllerContract;
 use Jkirkby91\LumenRestServerComponent\Libraries\ResourceResponseTrait;
-use ApiArchitect\Compass\Http\Controllers\RestApi;
+use Jkirkby91\LumenRestServerComponent\Http\Controllers\RestController;
 use Jkirkby91\Boilers\RestServerBoiler\TransformerContract AS ObjectTransformer;
 use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
 
@@ -20,7 +20,7 @@ use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRep
  * @package app\Http\Controllers
  * @author James Kirkby <jkirkby91@gmail.com>
  */
-class AuthenticateController extends RestApi implements JWTAuthControllerContract
+class AuthenticateController extends RestController implements JWTAuthControllerContract
 {
 
     use ResourceResponseTrait;

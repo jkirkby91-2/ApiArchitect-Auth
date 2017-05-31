@@ -8,6 +8,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Jkirkby91\Boilers\RestServerBoiler\Exceptions;
 use Spatie\Fractal\ArraySerializer AS ArraySerialization;
 use ApiArchitect\Compass\Http\Controllers\RestApi;
+use Jkirkby91\Boilers\RestServerBoiler\TransformerContract AS ObjectTransformer;
+use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
 
 /**
  * Class USerController
@@ -17,6 +19,17 @@ use ApiArchitect\Compass\Http\Controllers\RestApi;
  */
 final class UserController extends RestApi
 {
+
+  /**
+   * @var $auth
+   */
+  protected $auth;
+
+  public function __construct(ResourceRepository $repository, ObjectTransformer $objectTransformer, JWTAuth $auth)
+  {
+      $this->auth = $auth;    
+      parent::__construct($repository,$objectTransformer);
+  }
 
   public function index(ServerRequestInterface $request) {
 
@@ -32,7 +45,8 @@ final class UserController extends RestApi
    * @param ServerRequestInterface $request
    * @return mixed
    */
-  public function register(ServerRequestInterface $request) {
+  public function register(ServerRequestInterface $request)
+  {
     return $this->store($request);
   }
 
@@ -40,27 +54,10 @@ final class UserController extends RestApi
    * @param ServerRequestInterface $request
    * @return mixed
    */
-  public function store(ServerRequestInterface $request) {
+  public function store(ServerRequestInterface $request)
+  {
 
-    //@TODO Do some pre Routed Validation
-    //@TODO Check CRUD permission
-    //@TODO wrap in try catch
     $userRegDetails = $request->getParsedBody();
-
-
-    //@TODO move this into a validation middleware
-    if ($userRegDetails['password'] !== $userRegDetails['password_confirmation']) {
-      throw new Exceptions\UnprocessableEntityException;
-    }
-
-    //@TODO move into validation middlware
-    if (!array_key_exists('role', $userRegDetails)) {
-      throw new Exceptions\UnprocessableEntityException('No user role for registration specified');
-    } else {
-      if (in_array($userRegDetails['role'], array('admin','administrator','superadministrator'))){
-        throw new Exceptions\UnprocessableEntityException('Un-authorised role type');
-      }
-    }
 
     $userEntity = $this->repository->findOrCreateUser(
       $userRegDetails['email'],
@@ -75,7 +72,6 @@ final class UserController extends RestApi
     $resource = $this->item($userEntity)
           ->transformWith($this->transformer)
           ->addMeta(['token' => $token])
-          ->addMeta(['role' => $targetRole->getName()])
           ->serializeWith(new ArraySerialization());
 
     return $this->createdResponse($resource);

@@ -61,7 +61,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->app->register(\ApiArchitect\Auth\Providers\SocialAccountRepositoryServiceProvider::class);
         $this->app->register(\ApiArchitect\Auth\Providers\AccountServiceProvider::class);
 
-        $this->app->register(\ApiArchitect\Filesystem\Providers\FileSystemServiceProvider::class);
+        $this->app->register(\ApiArchitect\FileSystem\Providers\FileSystemServiceProvider::class);
 
         if(getenv('SOCIALITE_ENABLED') === 'TRUE') {        
           $this->app->register(\ApiArchitect\Auth\Providers\SocialiteServiceProvider::class);
@@ -108,7 +108,12 @@ class AuthServiceProvider extends ServiceProvider
          $this->app->bind(\ApiArchitect\Auth\Http\Controllers\UserController::class, function($app) {
              return new \ApiArchitect\Auth\Http\Controllers\UserController(
                  $app['em']->getRepository(\ApiArchitect\Auth\Entities\User::class),
-                 new \ApiArchitect\Auth\Http\Transformers\UserTransformer
+                 new \ApiArchitect\Auth\Http\Transformers\UserTransformer,
+                 new \Tymon\JWTAuth\JWTAuth(
+                    $app['tymon.jwt.manager'],
+                    $app['tymon.jwt.provider.auth'],
+                    $app['tymon.jwt.parser']
+                  )
              );
          });
 
