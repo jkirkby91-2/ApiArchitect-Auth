@@ -311,7 +311,7 @@ class User extends AbstractResourceEntity implements AuthenticatableContract, JW
   /**
    * @param UserGroup $userGroup
    */
-  public function removeSocialAccount(UserGroup $socialAccount)
+  public function removeSocialAccount(SocialAccount $socialAccount)
   {
     if (!$this->socialAccounts->contains($socialAccount)) {
         return;

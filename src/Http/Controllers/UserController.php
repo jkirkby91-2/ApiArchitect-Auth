@@ -87,16 +87,16 @@ final class UserController extends RestApi
     $userProfileDetails = $request->getParsedBody();
 
     try {
-      if (!$data = $this->repository->show($id)) {
+      if (!$data = $this->repository->findUserFromEmail($this->user->getEmail())) {
         throw new Exceptions\NotFoundHttpException();
       }
     } catch (Exceptions\NotFoundHttpException $exception) {
       $this->notFoundResponse();
     }
 
-    if (isset($userProfileDetails['roles'])) {
-      $data = $data->setRoles($userProfileDetails['roles']);
-    }
+    // if (isset($userProfileDetails['roles'])) {
+    //   $data = $data->addRoles($userProfileDetails['roles']);
+    // }
 
     if (isset($userProfileDetails['username'])) {
       $data = $data->setUserName($userProfileDetails['username']);
@@ -129,9 +129,9 @@ final class UserController extends RestApi
     $resource = $this->item($data)
           ->transformWith($this->transformer)
           ->serializeWith(new ArraySerialization())
-          ->toJson();
+          ->toArray();
 
-    return $this->createdResponse();
+    return $this->createdResponse($resource);
   }
 
   /**
