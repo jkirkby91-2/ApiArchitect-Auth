@@ -6,13 +6,13 @@
     "type": "library",
     "require": {
         "php": ">=7.0.0",
-        "jkirkby91/DoctrineNodeEntity": "dev-master",
-        "jkirkby91/DoctrineRepositories": "dev-master",
-        "jkirkby91/LumenDoctrineComponent": "dev-master",
-        "jkirkby91/LumenRestServerComponent": "dev-master",
+        "jkirkby91/DoctrineNodeEntity": "1.0.0-beta",
+        "jkirkby91/DoctrineRepositories": "1.0.0-beta",
+        "jkirkby91/LumenDoctrineComponent": "1.0.0-beta",
+        "jkirkby91/LumenRestServerComponent": "1.0.0-beta",
         "tymon/jwt-auth": "1.0.0-beta.3",
-        "apiarchitect/compass": "dev-master",
-        "apiarchitect/filesystem": "dev-master",        
+        "apiarchitect/compass": "1.0.0-beta",
+        "apiarchitect/filesystem": "1.0.0-beta",        
         "laravel/socialite": "^3.0"
     },
     "require-dev": {
