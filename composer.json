@@ -5,7 +5,7 @@
     "license": "CC BY-NC-SA",
     "type": "library",
     "require": {
-        "php": ">=5.5.9",
+        "php": ">=7.0.0",
         "jkirkby91/DoctrineNodeEntity": "dev-master",
         "jkirkby91/DoctrineRepositories": "dev-master",
         "jkirkby91/LumenDoctrineComponent": "dev-master",
