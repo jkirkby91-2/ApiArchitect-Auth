@@ -103,12 +103,13 @@ class User extends AbstractResourceEntity implements AuthenticatableContract, JW
    */
   protected $socialAccounts;
 
-  /**
-   * User constructor.
-   * @param $password
-   * @param $email
-   * @param $name
-   */
+	/**
+	 * User constructor.
+	 *
+	 * @param $email
+	 * @param $name
+	 * @param $username
+	 */
   public function __construct($email, $name, $username)
   {
     $this->setName($name);
@@ -157,7 +158,7 @@ class User extends AbstractResourceEntity implements AuthenticatableContract, JW
   /**
    * @return mixed
    */
-  public function getUserName() {
+  public function getUsername() {
     return $this->username;
   }
 
@@ -165,7 +166,7 @@ class User extends AbstractResourceEntity implements AuthenticatableContract, JW
    * @param $username
    * @return $this
    */
-  public function setUserName($username) {
+  public function setUsername($username) {
     $this->username = $username;
     return $this;
   }

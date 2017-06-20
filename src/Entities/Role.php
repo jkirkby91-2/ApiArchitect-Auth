@@ -33,14 +33,6 @@ class Role extends AbstractResourceEntity implements RoleContract
     }
 
     /**
-     * @Gedmo\Versioned
-     * @Gedmo\Blameable(on="create")
-     * @Gedmo\IpTraceable(on="create")
-     * @ORM\Column(type="string", length=45, nullable=false, unique=true)
-     */
-    protected $name;
-
-    /**
      * @return mixed
      */
     public function getName()
