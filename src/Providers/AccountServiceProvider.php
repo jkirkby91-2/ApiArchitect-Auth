@@ -19,7 +19,7 @@ class AccountServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function boot()
     {
       $this->app['apiarchitect.account.service'] = new AccountService(
         $this->app['em']->getRepository(\ApiArchitect\Auth\Entities\User::class

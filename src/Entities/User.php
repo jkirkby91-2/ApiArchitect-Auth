@@ -103,12 +103,13 @@ class User extends AbstractResourceEntity implements AuthenticatableContract, JW
    */
   protected $socialAccounts;
 
-  /**
-   * User constructor.
-   * @param $password
-   * @param $email
-   * @param $name
-   */
+	/**
+	 * User constructor.
+	 *
+	 * @param $email
+	 * @param $name
+	 * @param $username
+	 */
   public function __construct($email, $name, $username)
   {
     $this->setName($name);

@@ -5,24 +5,42 @@ namespace ApiArchitect\Auth\Services;
 use ApiArchitect\Auth\Entities\User;
 use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
 
+/**
+ * Class AccountService
+ *
+ * @package ApiArchitect\Auth\Services
+ * @author  James Kirkby <jkirkby@protonmail.ch>
+ */
 class AccountService 
 {
 
-  /**
-   * @var ResourceRepository
-   */
+	/**
+	 * @var \Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract
+	 */
   protected $repository;
 
-  /**
-   * AccountService constructor.
-   *
-   * @param ResourceRepository $repository
-   */
+	/**
+	 * AccountService constructor.
+	 *
+	 * @param \Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract $repository
+	 */
   public function __construct(ResourceRepository $repository)
   {
     $this->repository = $repository;
   }
 
+	/**
+	 * createNewAccount()
+	 *
+	 * @param      $email
+	 * @param      $name
+	 * @param      $username
+	 * @param null $role
+	 * @param null $password
+	 * @param null $avatar
+	 *
+	 * @return $this|\ApiArchitect\Auth\Entities\User|mixed
+	 */
   public function createNewAccount($email, $name, $username, $role=null, $password=null, $avatar=null)
   {
     $userEntity = new User($email,$name,$username);
