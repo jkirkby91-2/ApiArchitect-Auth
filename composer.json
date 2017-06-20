@@ -6,7 +6,7 @@
     "type": "library",
     "require": {
         "php": ">=7.0.0",
-        "jkirkby91/DoctrineNodeEntity": "1.0.0-beta",
+        "jkirkby91/DoctrineNodeEntity": "1.0.0-beta.1",
         "jkirkby91/DoctrineRepositories": "1.0.0-beta",
         "jkirkby91/LumenDoctrineComponent": "1.0.0-beta",
         "jkirkby91/LumenRestServerComponent": "1.0.0-beta",
