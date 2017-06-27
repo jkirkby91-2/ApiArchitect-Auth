@@ -21,11 +21,6 @@
 		public function register()
 		{
 			$this->app->bind(
-				'\Jkirkby91\Boilers\NodeEntityBoiler\EntityContract',
-				'\ApiArchitect\Auth\Entities\PasswordResets'
-			);
-
-			$this->app->bind(
 				\ApiArchitect\Auth\Contracts\JWTRequestParserContract::class,
 				\ApiArchitect\Auth\Http\Parser\Parser::class
 			);
@@ -44,7 +39,10 @@
 		 */
 		public function boot()
 		{
-
+			$this->app->bind(
+				\Tymon\JWTAuth\Contracts\JWTSubject::class,
+				\AApiArchitect\Auth\Entities\User::class
+			);
 		}
 		
 		/**
