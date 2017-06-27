@@ -3,6 +3,7 @@
 	namespace ApiArchitect\Auth\Http\Controllers;
 
 	use ApiArchitect\Auth\ApiArchitectAuth;
+	use ApiArchitect\Compass\Http\Controllers\ResourceApi;
 	use Tymon\JWTAuth\JWT;
 	use Tymon\JWTAuth\JWTAuth;
 	use ApiArchitect\Auth\Entities\User;
@@ -19,7 +20,7 @@
 	 * @package app\Http\Controllers
 	 * @author James Kirkby <jkirkby91@gmail.com>
 	 */
-	final class UserController extends RestApi
+	final class UserController extends ResourceApi
 	{
 
 		/**
