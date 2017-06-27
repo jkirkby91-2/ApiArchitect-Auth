@@ -55,7 +55,7 @@ class DoctrineUserAdapter implements Auth
 
         //validate found user
         if($this->doctrineUserProvider->validateCredentials($authTarget,$credentials) === true){
-            return $this->user = $this->ifFound($authTarget);
+            return $this->ifFound($authTarget);
         } else {
             return false;
         }
@@ -69,9 +69,7 @@ class DoctrineUserAdapter implements Auth
 	 */
     public function byId($id)
     {
-		$this->user = $this->ifFound($this->doctrineUserProvider->retrieveById($id));
-
-		return $this->user;
+		return $this->ifFound($this->doctrineUserProvider->retrieveById($id));
 	}
 
 	/**
@@ -83,21 +81,21 @@ class DoctrineUserAdapter implements Auth
         return $this->user;
     }
 
-    /**
-     * Check the returned object has a user or throw exception
-     *
-	 * @TODO type hint user object
-     * @param $object
-     * @return mixed
-     * @throws EntityNotFoundException
-     */
-    private function ifFound($object)
+	/**
+	 * ifFound()
+	 * @param \ApiArchitect\Auth\Entities\User $user
+	 *
+	 * @return \ApiArchitect\Auth\Entities\User
+	 * @throws \Doctrine\ORM\EntityNotFoundException
+	 */
+    private function ifFound(\ApiArchitect\Auth\Entities\User $user)
     {
-        if (is_null($object) || !is_a($object, 'ApiArchitect\Auth\Entities\User')) {
+        if (is_null($user) || !is_a($user, 'ApiArchitect\Auth\Entities\User')) {
             throw new EntityNotFoundException;
         } else {
-            if ($object->getEnabled() != false) {
-                return $object;
+            if ($user->getEnabled() != false) {
+            	$this->user = $user;
+                return $user;
             } else {
                 throw new UnauthorizedHttpException('User Account Has Been Banned');
             }

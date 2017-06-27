@@ -20,23 +20,20 @@
 		 */
 		public function register()
 		{
-			$this->registerRoutes();
-			$this->registerTokenParser();
-			$this->registerServiceProviders();
-			$this->registerRouteMiddleware();
-//			$this->registerControllers();
-
-			//bind password entity to entity contract implementation
 			$this->app->bind(
 				'\Jkirkby91\Boilers\NodeEntityBoiler\EntityContract',
 				'\ApiArchitect\Auth\Entities\PasswordResets'
 			);
 
 			$this->app->bind(
-				'\ApiArchitect\Auth\Contracts\JWTRequestParserContract',
-				'\ApiArchitect\Auth\Http\Parser\Parser'
+				\ApiArchitect\Auth\Contracts\JWTRequestParserContract::class,
+				\ApiArchitect\Auth\Http\Parser\Parser::class
 			);
 
+			$this->registerRoutes();
+			$this->registerTokenParser();
+			$this->registerServiceProviders();
+			$this->registerRouteMiddleware();
 			$this->registerControllers();
 		}
 
@@ -47,6 +44,7 @@
 		 */
 		public function boot()
 		{
+
 		}
 		
 		/**

@@ -23,13 +23,7 @@ class SocialiteServiceProvider extends ServiceProvider
     public function register()
     {
       $this->registerServiceProviders();
-//      $this->registerControllers();
-		$this->app->bind(
-			'\ApiArchitect\Auth\Contracts\JWTRequestParserContract',
-			'\ApiArchitect\Auth\Http\Parser\Parser'
-		);
-
-		$this->registerControllers();
+      $this->registerControllers();
     }
 
     public function boot()

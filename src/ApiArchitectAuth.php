@@ -12,7 +12,6 @@
 
 	namespace ApiArchitect\Auth;
 
-	use Tymon\JWTAuth\JWT;
 	use Tymon\JWTAuth\Manager;
 	use Tymon\JWTAuth\Contracts\Providers\Auth;
 	use ApiArchitect\Auth\Contracts\JWTRequestParserContract;
@@ -23,7 +22,7 @@
 	 * @package ApiArchitect\Auth
 	 * @author  James Kirkby <jkirkby@protonmail.ch>
 	 */
-	class ApiArchitectAuth extends JWT
+	class ApiArchitectAuth
 	{
 		/**
 		 * @var \Tymon\JWTAuth\Contracts\Providers\Auth
@@ -41,6 +40,8 @@
 		 * @var \ApiArchitect\Auth\Contracts\JWTParserContract|\ApiArchitect\Auth\Contracts\JWTRequestParserContract
 		 */
 		protected $parser;
+		
+		protected $user;
 
 		/**
 		 * ApiArchitectAuth constructor.
@@ -54,6 +55,7 @@
 			$this->provider = $auth;
 			$this->manager = $manager;
 			$this->parser = $parser;
+			$this->user = $this->provider->user();
 		}
 
 		/**
@@ -71,9 +73,23 @@
 		public function getProvider() {
 			return $this->provider;
 		}
-		
+
+		/**
+		 * getManager()
+		 * @return \Tymon\JWTAuth\Manager
+		 */
 		public function getManager()
 		{
 			return $this->manager;
 		}
+
+		/**
+		 * getUser()
+		 * @return mixed
+		 */
+		public function getUser()
+		{
+			return $this->user;
+		}
+		
 	}
