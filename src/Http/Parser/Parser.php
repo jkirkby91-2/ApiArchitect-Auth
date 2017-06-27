@@ -8,14 +8,14 @@ use ApiArchitect\Auth\Contracts\JWTRequestParserContract;
 class Parser implements JWTRequestParserContract
 {
 
-    /**
-     * @var array
-     */
+	/**
+	 * @var array
+	 */
     private $chain;
 
-    /**
-     * @var \Illuminate\Http\Request
-     */
+	/**
+	 * @var \Illuminate\Http\Request|\Psr\Http\Message\ServerRequestInterface
+	 */
     protected $request;
 
     /**
@@ -65,14 +65,20 @@ class Parser implements JWTRequestParserContract
         return $this->setChain($chain);
     }
 
-    /**
-     * Iterate through the parsers and attempt to retrieve
-     * a value, otherwise return null.
-     *
-     * @return string|null
-     */
+	/**
+	 * parseToken()
+	 *
+	 * Iterate through the parsers and attempt to retrieve
+	 * a value, otherwise return null.
+	 *
+	 * @return mixed
+	 * @throws \Exception
+	 */
     public function parseToken()
     {
+		if ($this->chain === array()) {
+			throw new \Exception('No Chains');
+		}
         foreach ($this->chain as $parser) {
             $response = $parser->parse($this->request);
             if ($response !== null) {

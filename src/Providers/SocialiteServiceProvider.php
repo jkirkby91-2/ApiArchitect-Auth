@@ -23,8 +23,19 @@ class SocialiteServiceProvider extends ServiceProvider
     public function register()
     {
       $this->registerServiceProviders();
-      $this->registerControllers();
+//      $this->registerControllers();
+		$this->app->bind(
+			'\ApiArchitect\Auth\Contracts\JWTRequestParserContract',
+			'\ApiArchitect\Auth\Http\Parser\Parser'
+		);
+
+		$this->registerControllers();
     }
+
+    public function boot()
+	{
+
+	}
 
     /**
      * Register Service providers for Socialite
@@ -33,11 +44,11 @@ class SocialiteServiceProvider extends ServiceProvider
     {
       $this->app->register(\Laravel\Socialite\SocialiteServiceProvider::class);
       $this->app->register(\ApiArchitect\Auth\Providers\ProviderRepositoryServiceProvider::class);
-  
+
       if(getenv('APP_ENV') === 'local') {
         $this->app->register(\ApiArchitect\Auth\Providers\CreateProviderCommandServiceProvider::class);
-      }      
-    }   
+      }
+    }
 
      /**
       * Register Controllers + inject their transformer
@@ -49,14 +60,15 @@ class SocialiteServiceProvider extends ServiceProvider
              return new \ApiArchitect\Auth\Http\Controllers\Auth\Socialite\OauthController(
               new \Laravel\Socialite\SocialiteManager($app),
               $app['em']->getRepository(\ApiArchitect\Auth\Entities\User::class),
-              new \Tymon\JWTAuth\JWTAuth(
+              new \ApiArchitect\Auth\ApiArchitectAuth(
                 $app['tymon.jwt.manager'],
                 $app['tymon.jwt.provider.auth'],
-                $app['tymon.jwt.parser']
+				  new \ApiArchitect\Auth\Http\Parser\Parser(
+					  $app['psr7request'],[new \ApiArchitect\Auth\Http\Parser\AuthHeaders]
+				  )
               ),
               new \ApiArchitect\Auth\Http\Transformers\AuthTokenTransformer
              );
          });
-     }     
+     }
 }
- 

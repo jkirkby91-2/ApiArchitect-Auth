@@ -13,19 +13,25 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  *
  * Doctrine authentication driver for JWT Auth
  *
- * @package ApiArchitect\Auth\
- * @author James Kirkby <jkirkby91@gmail.com>
+ * @package ApiArchitect\Auth\Adapters
+ * @author  James Kirkby <jkirkby@protonmail.ch>
  */
 class DoctrineUserAdapter implements Auth
 {
 
-    /**
-     * @var
-     */
+	/**
+	 * @var
+	 */
     protected $auth;
 
+	/**
+	 * @var
+	 */
     protected $user;
 
+	/**
+	 * @var \LaravelDoctrine\ORM\Auth\DoctrineUserProvider
+	 */
     protected $doctrineUserProvider;
 
     /**
@@ -49,27 +55,29 @@ class DoctrineUserAdapter implements Auth
 
         //validate found user
         if($this->doctrineUserProvider->validateCredentials($authTarget,$credentials) === true){
-            $this->user = $authTarget;
-            return $this->user;
+            return $this->user = $this->ifFound($authTarget);
         } else {
             return false;
         }
     }
 
-    /**
-     * @param mixed $id
-     * @return mixed
-     */
+	/**
+	 * byId()
+	 * @param mixed $id
+	 *
+	 * @return mixed
+	 */
     public function byId($id)
     {
-        $this->user = $this->ifFound($this->doctrineUserProvider->retrieveById($id));
+		$this->user = $this->ifFound($this->doctrineUserProvider->retrieveById($id));
 
-        return $this->ifFound($this->user);
-    }
+		return $this->user;
+	}
 
-    /**
-     * @return mixed
-     */
+	/**
+	 * user()
+	 * @return mixed
+	 */
     public function user()
     {
         return $this->user;
@@ -78,17 +86,17 @@ class DoctrineUserAdapter implements Auth
     /**
      * Check the returned object has a user or throw exception
      *
+	 * @TODO type hint user object
      * @param $object
      * @return mixed
      * @throws EntityNotFoundException
      */
     private function ifFound($object)
     {
-        if(is_null($object) || !is_a($object, 'ApiArchitect\Auth\Entities\User'))
-        {
+        if (is_null($object) || !is_a($object, 'ApiArchitect\Auth\Entities\User')) {
             throw new EntityNotFoundException;
         } else {
-            if($object->getEnabled() != false) {
+            if ($object->getEnabled() != false) {
                 return $object;
             } else {
                 throw new UnauthorizedHttpException('User Account Has Been Banned');

@@ -2,6 +2,7 @@
 
 namespace ApiArchitect\Auth\Http\Controllers\Auth\Socialite;
 
+use ApiArchitect\Auth\ApiArchitectAuth;
 use Socialite;
 use Tymon\JWTAuth\JWTAuth;
 use ApiArchitect\Auth\Entities\User;
@@ -37,7 +38,7 @@ class OauthController extends RestController implements SocialiteOauthContract
      * OauthController constructor.
      * @param SocialiteManager $socialiteManager
      */
-    public function __Construct(SocialiteManager $socialiteManager, ResourceRepository $repository, JWTAuth $auth, ObjectTransformer $objectTransformer)
+    public function __Construct(SocialiteManager $socialiteManager, ResourceRepository $repository, ApiArchitectAuth $auth, ObjectTransformer $objectTransformer)
     {
       $this->auth = $auth;
       $this->socialiteManager = $socialiteManager;

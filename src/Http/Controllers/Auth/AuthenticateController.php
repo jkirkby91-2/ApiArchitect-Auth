@@ -2,6 +2,7 @@
 
 namespace ApiArchitect\Auth\Http\Controllers\Auth;
 
+use ApiArchitect\Auth\ApiArchitectAuth;
 use Tymon\JWTAuth\JWTAuth;
 use Doctrine\ORM\EntityNotFoundException;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -51,7 +52,7 @@ class AuthenticateController extends RestController implements JWTAuthController
      * AuthenticateController constructor.
      * @param JWTAuth $auth
      */
-    public function __construct(JWTAuth $auth, ResourceRepository $repository, ObjectTransformer $authTokenTransformer, ObjectTransformer $userTransformer)
+    public function __construct(ApiArchitectAuth $auth, ResourceRepository $repository, ObjectTransformer $authTokenTransformer, ObjectTransformer $userTransformer)
     {
         $this->auth = $auth;
         $this->repository = $repository;
