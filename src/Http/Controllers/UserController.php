@@ -74,7 +74,7 @@
 		 *
 		 * @return \Zend\Diactoros\Response\JsonResponse
 		 */
-		public function store(ServerRequestInterface $request)
+		public function store(ServerRequestInterface $request) : \Zend\Diactoros\Response\JsonResponse
 		{
 
 			$userRegDetails = $request->getParsedBody();
@@ -92,7 +92,7 @@
 			$resource = $this->item($userEntity)
 				->transformWith($this->transformer)
 				->addMeta(['token' => $token])
-				->serializeWith(new ArraySerialization());
+				->serializeWith($this->serializer);
 
 			return $this->createdResponse($resource);
 		}
@@ -104,12 +104,12 @@
 		 *
 		 * @return \Zend\Diactoros\Response\JsonResponse
 		 */
-		public function update(ServerRequestInterface $request, $id)
+		public function update(ServerRequestInterface $request, $id) : \Zend\Diactoros\Response\JsonResponse
 		{
 			$userProfileDetails = $request->getParsedBody();
 
 			try {
-				if (!$data = $this->repository->findUserFromEmail($this->user->getEmail())) {
+				if (!$data = $this->repository->findUserFromEmail($this->auth->getUser()->getEmail())) {
 					throw new Exceptions\NotFoundHttpException();
 				}
 			} catch (Exceptions\NotFoundHttpException $exception) {
@@ -119,6 +119,10 @@
 			// if (isset($userProfileDetails['roles'])) {
 			//   $data = $data->addRoles($userProfileDetails['roles']);
 			// }
+
+			if (isset($userProfileDetails['name'])) {
+				$data = $data->setName($userProfileDetails['name']);
+			}
 
 			if (isset($userProfileDetails['username'])) {
 				$data = $data->setUserName($userProfileDetails['username']);
@@ -150,7 +154,7 @@
 
 			$resource = $this->item($data)
 				->transformWith($this->transformer)
-				->serializeWith(new ArraySerialization())
+				->serializeWith($this->serializer)
 				->toArray();
 
 			return $this->createdResponse($resource);
