@@ -13,6 +13,7 @@
 	use ApiArchitect\Compass\Http\Controllers\RestApi;
 	use Jkirkby91\Boilers\RestServerBoiler\TransformerContract AS ObjectTransformer;
 	use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
+	use Zend\Diactoros\Response\JsonResponse;
 
 	/**
 	 * Class USerController
@@ -47,7 +48,7 @@
 		 *
 		 * @return \Zend\Diactoros\Response\JsonResponse
 		 */
-		public function index(ServerRequestInterface $request)
+		public function index(ServerRequestInterface $request) : JsonResponse
 		{
 			$resource = $this->item($this->auth->getProvider()->user())
 				->transformWith($this->transformer)
