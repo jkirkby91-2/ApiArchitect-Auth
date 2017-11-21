@@ -52,9 +52,9 @@
 		/**
 		 * ApiArchitectAuth constructor.
 		 *
-		 * @param \Tymon\JWTAuth\Manager                         $manager
-		 * @param \Tymon\JWTAuth\Contracts\Providers\Auth        $auth
-		 * @param \ApiArchitect\Auth\Contracts\JWTParserContract $parser
+		 * @param \Tymon\JWTAuth\Manager                                $manager
+		 * @param \Tymon\JWTAuth\Contracts\Providers\Auth               $auth
+		 * @param \ApiArchitect\Auth\Contracts\JWTRequestParserContract $parser
 		 */
 		public function __construct(Manager $manager, Auth $auth, JWTRequestParserContract $parser)
 		{

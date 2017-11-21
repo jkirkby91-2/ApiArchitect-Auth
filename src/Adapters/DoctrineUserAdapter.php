@@ -44,18 +44,21 @@ class DoctrineUserAdapter implements Auth
         $this->doctrineUserProvider = $doctrineUserProvider;
     }
 
-    /**
-     * @param array $credentials
-     * @return bool|\Illuminate\Contracts\Auth\Authenticatable|null
-     */
+	/**
+	 * byCredentials()
+	 * @param array $credentials
+	 *
+	 * @return \ApiArchitect\Auth\Entities\User|bool|mixed
+	 * @throws \Doctrine\ORM\EntityNotFoundException
+	 */
     public function byCredentials(array $credentials)
     {
         //try get a user
         $authTarget = $this->ifFound($this->doctrineUserProvider->retrieveByCredentials($credentials));
 
         //validate found user
-        if($this->doctrineUserProvider->validateCredentials($authTarget,$credentials) === true){
-            return $this->ifFound($authTarget);
+        if ($this->doctrineUserProvider->validateCredentials($authTarget,$credentials) === true){
+            return $authTarget;
         } else {
             return false;
         }

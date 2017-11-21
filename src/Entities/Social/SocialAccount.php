@@ -14,7 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  *
  * @package ApiArchitect\Auth\Entities\Social
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\SocialAccountRepository")
- * @ORM\Table(name="social_account", indexes={@ORM\Index(name="search_idx", columns={"name"})})
+ * @ORM\Table(name="social_account", indexes={@ORM\Index(name="social_account_search_idx", columns={"name"})})
  * @Gedmo\Loggable
  * @ORM\HasLifecycleCallbacks
  *

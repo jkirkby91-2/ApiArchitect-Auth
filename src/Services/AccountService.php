@@ -1,81 +1,87 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Services;
+	namespace ApiArchitect\Auth\Services {
 
-use ApiArchitect\Auth\Entities\User;
-use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
+		use ApiArchitect\{
+			Auth\Entities\User
+		};
 
-/**
- * Class AccountService
- *
- * @package ApiArchitect\Auth\Services
- * @author  James Kirkby <jkirkby@protonmail.ch>
- */
-class AccountService 
-{
+		use Jkirkby91\{
+			Boilers\RepositoryBoiler\ResourceRepositoryContract as ResourceRepository
+		};
 
-	/**
-	 * @var \Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract
-	 */
-  protected $repository;
+		/**
+		 * Class AccountService
+		 *
+		 * @package ApiArchitect\Auth\Services
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
+		 */
+		class AccountService
+		{
 
-	/**
-	 * AccountService constructor.
-	 *
-	 * @param \Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract $repository
-	 */
-  public function __construct(ResourceRepository $repository)
-  {
-    $this->repository = $repository;
-  }
+			/**
+			 * @var \Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract
+			 */
+			protected $repository;
 
-	/**
-	 * createNewAccount()
-	 *
-	 * @param      $email
-	 * @param      $name
-	 * @param      $username
-	 * @param null $role
-	 * @param null $password
-	 * @param null $avatar
-	 *
-	 * @return $this|\ApiArchitect\Auth\Entities\User|mixed
-	 */
-  public function createNewAccount($email, $name, $username, $role=null, $password=null, $avatar=null)
-  {
-    $userEntity = new User($email,$name,$username);
-   
-    if($password === null)
-    {
-      $userEntity->setOTP(1);
-      $userEntity->setPassword(md5(microtime(true).$email.$name));
-    } else {
-      $userEntity = $userEntity->setPassword(app()->make('hash')->make($password));
-    }
+			/**
+			 * AccountService constructor.
+			 *
+			 * @param \Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract $repository
+			 */
+			public function __Construct(ResourceRepository $repository)
+			{
+				$this->repository = $repository;
+			}
 
-    if($role === null)
-    {
-      $role = 'user';
-    }
+			/**
+			 * createNewAccount()
+			 * @param      $email
+			 * @param      $firstName
+			 * @param      $lastName
+			 * @param      $username
+			 * @param null $role
+			 * @param null $password
+			 * @param null $avatar
+			 *
+			 * @return $this|\ApiArchitect\Auth\Entities\User|mixed
+			 */
+			public function createNewAccount(string $email, string $firstName, string $lastName, string $username, $role=null, $password=null, $avatar=null) : User
+			{
+				$userEntity = new User($email, $username, $firstName, $lastName);
 
-    $roleEntity = app()
-      ->make('em')
-      ->getRepository('\ApiArchitect\Auth\Entities\Role')
-      ->findOneBy(['name' => $role]);
+				if ($password === null)
+				{
+					$userEntity->setOTP(1);
+					$userEntity->setPassword(md5(microtime(true).$email.$firstName.$lastName));
+				} else {
+					$userEntity = $userEntity->setPassword(app()->make('hash')->make($password));
+				}
 
-    if (is_null($roleEntity)) {
-      throw new \Jkirkby91\Boilers\RestServerBoiler\Exceptions\UnprocessableEntityException('target role not found');
-    }
+				if ($role === null)
+				{
+					$role = 'user';
+				}
 
-    $userEntity->addRoles($roleEntity);
+				$roleEntity = app()
+					->make('em')
+					->getRepository('\ApiArchitect\Auth\Entities\Role')
+					->findOneBy(['name' => $role]);
 
-    if($avatar !== null)
-    {
-      $userEntity->setAvatar($avatar);
-    }
+				if (is_null($roleEntity)) {
+					throw new \Jkirkby91\Boilers\RestServerBoiler\Exceptions\UnprocessableEntityException('target role not found');
+				}
 
-    $userEntity = $this->repository->store($userEntity);
+				$userEntity->addRoles($roleEntity);
 
-    return $userEntity;
-  }
-}
+				if ($avatar !== null)
+				{
+					$userEntity = $this->repository->setUserAvatar($userEntity, $avatar);
+				}
+
+				$userEntity = $this->repository->store($userEntity);
+
+				return $userEntity;
+			}
+		}
+	}

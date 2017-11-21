@@ -1,341 +1,440 @@
 <?php
 
-namespace ApiArchitect\Auth\Entities;
+	namespace ApiArchitect\Auth\Entities {
 
-use Doctrine\ORM\Mapping as ORM;
-use ApiArchitect\Auth\Entities\Role;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use LaravelDoctrine\ACL\Mappings as ACL;
-use Doctrine\Common\Collections\ArrayCollection;
-use ApiArchitect\Auth\Entities\Social\SocialAccount;
-use LaravelDoctrine\ACL\Roles\HasRoles as HasRolesTrait;
-use Laravel\Socialite\Contracts\User AS SocialUserContract;
-use LaravelDoctrine\ACL\Contracts\HasRoles as HasRolesContract;
-use LaravelDoctrine\ORM\Auth\Authenticatable as AuthenticatableTrait;
-use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use LaravelDoctrine\ACL\Contracts\HasPermissions as HasPermissionContract;
-use LaravelDoctrine\ACL\Permissions\HasPermissions as HasPermissionsTrait;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use ApiArchitect\Compass\Entities\AbstractResourceEntity;
+		use Doctrine\{
+			ORM\Mapping as ORM, Common\Collections\ArrayCollection
+		};
+		use ApiArchitect\{
+			Auth\Entities\Role, Auth\Entities\Social\SocialAccount, Compass\Entities\AbstractResourceEntity
+		};
+		use Gedmo\{
+			Mapping\Annotation as Gedmo
+		};
+		use Tymon\{
+			JWTAuth\Contracts\JWTSubject
+		};
+		use LaravelDoctrine\{
+			ACL\Mappings as ACL, ACL\Roles\HasRoles as HasRolesTrait, ACL\Contracts\HasRoles as HasRolesContract, ORM\Auth\Authenticatable as AuthenticatableTrait, ACL\Contracts\HasPermissions as HasPermissionContract, ACL\Permissions\HasPermissions as HasPermissionsTrait
+		};
+		use Laravel\{
+			Socialite\Contracts\User as SocialUserContract
+		};
+		use Illuminate\{
+			Auth\Passwords\CanResetPassword as CanResetPasswordTrait, Contracts\Auth\Authenticatable as AuthenticatableContract, Contracts\Auth\CanResetPassword as CanResetPasswordContract
+		};
 
-/**
- * Class User
- *
- * @package ApiArchitect\Auth\Entities
- * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\UserRepository")
- * @ORM\Table(name="users", indexes={@ORM\Index(name="search_idx", columns={"email"})})
- * @Gedmo\Loggable
- * @ORM\HasLifecycleCallbacks
- *
- * @package app\Http\Controllers
- * @author James Kirkby <jkirkby91@gmail.com>
- */
-class User extends AbstractResourceEntity implements AuthenticatableContract, JWTSubject, CanResetPasswordContract, HasRolesContract, HasPermissionContract, SocialUserContract
-{
+		/**
+		 * Class User
+		 *
+		 * @package ApiArchitect\Auth\Entities
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
+		 *
+		 * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\UserRepository")
+		 * @ORM\Table(name="users", indexes={@ORM\Index(name="users_search_idx", columns={"email"})})
+		 * @Gedmo\Loggable
+		 * @ORM\HasLifecycleCallbacks
+		 */
+		class User extends AbstractResourceEntity implements AuthenticatableContract, JWTSubject, CanResetPasswordContract, HasRolesContract, HasPermissionContract, SocialUserContract
+		{
 
-  use HasRolesTrait, HasPermissionsTrait, AuthenticatableTrait, CanResetPasswordTrait;
+			use HasRolesTrait, HasPermissionsTrait, AuthenticatableTrait, CanResetPasswordTrait;
 
-  /**
-   * @ORM\Column(type="string", nullable=false)
-   */
-  protected $enabled;
+			/**
+			 * @ORM\Column(type="string", nullable=false)
+			 */
+			protected $enabled;
 
-  /**
-   * @var ArrayCollection
-   * @ORM\ManyToMany(targetEntity="\ApiArchitect\Auth\Entities\Role", cascade={"all"}, fetch="EXTRA_LAZY")
-   * @ORM\JoinTable(name="user_roles",
-   *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-   *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", unique=false)})
-   */
-  protected $roles;
+			/**
+			 * @var ArrayCollection
+			 * @ORM\ManyToMany(targetEntity="\ApiArchitect\Auth\Entities\Role", cascade={"all"}, fetch="EXTRA_LAZY")
+			 * @ORM\JoinTable(name="user_roles",
+			 *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+			 *      inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id", unique=false)})
+			 */
+			protected $roles;
 
-  /**
-   * @ORM\Column(type="string", nullable=true)
-   */
-  protected $username;
+			/**
+			 * @ORM\Column(type="string", nullable=true)
+			 */
+			protected $firstName;
 
-  /**
-   * @var
-   * @ORM\Column(type="string",unique=true, nullable=false)
-   */
-  protected $email;
+			/**
+			 * @ORM\Column(type="string", nullable=true)
+			 */
+			protected $lastName;
 
-  /**
-   * @ORM\Column(type="string", nullable=false)
-   */
-  protected $password;
+			/**
+			 * @ORM\Column(type="string", nullable=true)
+			 */
+			protected $username;
 
-  /**
-   * @ACL\HasPermissions
-   */
-  public $permissions;
+			/**
+			 * @var
+			 * @ORM\Column(type="string",unique=true, nullable=false)
+			 */
+			protected $email;
 
-  /**
-   * @ORM\Column(name="remember_token", type="string", nullable=true)
-   */
-  protected $rememberToken;
+			/**
+			 * @ORM\Column(type="string", nullable=false)
+			 */
+			protected $password;
 
-  /**
-   * @ORM\Column(type="string", nullable=true)
-   */
-  protected $avatar; 
+			/**
+			 * @ACL\HasPermissions
+			 */
+			public $permissions;
 
-  /**
-   * @ORM\Column(type="integer", unique=false, nullable=true)
-   */
-  protected $OTP;
+			/**
+			 * @ORM\Column(name="remember_token", type="string", nullable=true)
+			 */
+			protected $rememberToken;
 
-  /**
-   * @var \Doctrine\Common\Collections\Collection|UserGroup[]
-   *
-   * @ORM\ManyToMany(targetEntity="\ApiArchitect\Auth\Entities\Social\SocialAccount", inversedBy="user", fetch="EXTRA_LAZY")
-   * @ORM\JoinTable(
-   *  name="user_socialaccount",
-   *  joinColumns={
-   *      @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-   *  },
-   *  inverseJoinColumns={
-   *      @ORM\JoinColumn(name="user_social_account_id", referencedColumnName="id")
-   *  }
-   * )
-   */
-  protected $socialAccounts;
+			/**
+			 * @ORM\Column(type="string", nullable=true)
+			 */
+			protected $avatar;
 
-	/**
-	 * User constructor.
-	 *
-	 * @param $email
-	 * @param $name
-	 * @param $username
-	 */
-  public function __construct($email, $name, $username)
-  {
-    $this->setName($name);
-    $this->setEmail($email);
-    $this->setEnabled(true);
-    $this->setNodeType('User');
-    $this->setUserName($username);
-    $this->roles = new ArrayCollection();
-    $this->socialAccounts = new ArrayCollection();
-  }
+			/**
+			 * @ORM\Column(type="integer", unique=false, nullable=true)
+			 */
+			protected $OTP;
 
-  /**
-   * @return mixed
-   */
-  public function getEnabled() {
-    return $this->enabled;
-  }
+			/**
+			 * @var \Doctrine\Common\Collections\Collection|UserGroup[]
+			 *
+			 * @ORM\ManyToMany(targetEntity="\ApiArchitect\Auth\Entities\Social\SocialAccount", inversedBy="user", fetch="EXTRA_LAZY")
+			 * @ORM\JoinTable(
+			 *  name="user_socialaccount",
+			 *  joinColumns={
+			 *      @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+			 *  },
+			 *  inverseJoinColumns={
+			 *      @ORM\JoinColumn(name="user_social_account_id", referencedColumnName="id")
+			 *  }
+			 * )
+			 */
+			protected $socialAccounts;
 
-  /**
-   * @param $enabled
-   * @return $this
-   */
-  public function setEnabled($enabled) {
-    if(is_bool($enabled)){
-      $this->enabled = $enabled;
-      return $this;
-    }
-  }
+			/**
+			 * User constructor.
+			 *
+			 * @param string $email
+			 * @param string $username
+			 * @param string $firstName
+			 * @param string $lastName
+			 */
+			public function __Construct(string $email, string $username, string $firstName, string $lastName)
+			{
+				parent::__construct($firstName. ' ' .$lastName);
 
-  /**
-   * @return mixed
-   */
-  public function getPassword() {
-    return $this->password;
-  }
+				$this->setFirstName($firstName);
+				$this->setLastName($lastName);
+				$this->setEmail($email);
+				$this->setEnabled(TRUE);
+				$this->setNodeType('User');
+				$this->setUserName($username);
+				$this->roles = new ArrayCollection();
+				$this->socialAccounts = new ArrayCollection();
+			}
 
-  /**
-   * @param $password
-   * @return $this
-   */
-  public function setPassword($password) {
-    $this->password = $password;
-    return $this;
-  }
+			/**
+			 * @return mixed
+			 */
+			public function getEnabled()
+			{
+				return $this->enabled;
+			}
 
-  /**
-   * @return mixed
-   */
-  public function getUsername() {
-    return $this->username;
-  }
+			/**
+			 * @param $enabled
+			 *
+			 * @return $this
+			 */
+			public function setEnabled($enabled)
+			{
+				if (is_bool($enabled)) {
+					$this->enabled = $enabled;
 
-  /**
-   * @param $username
-   * @return $this
-   */
-  public function setUsername($username) {
-    $this->username = $username;
-    return $this;
-  }
+					return $this;
+				}
+			}
 
-  /**
-   * @return mixed
-   */
-  public function getEmail() {
-    return $this->email;
-  }
+			/**
+			 * @return mixed
+			 */
+			public function getPassword()
+			{
+				return $this->password;
+			}
 
-  /**
-   * @param $username
-   * @return $this
-   */
-  public function setEmail($email) {
-    $this->email = $email;
-    return $this;
-  }
+			/**
+			 * @param $password
+			 *
+			 * @return $this
+			 */
+			public function setPassword($password)
+			{
+				$this->password = $password;
 
-  /**
-   * Get the token value for the "remember me" session.
-   *
-   * @return string
-   */
-  public function getRememberToken() {
-    return $this->rememberToken;
-  }
+				return $this;
+			}
 
-  /**
-   * @param string $value
-   * @return $this
-   */
-  public function setRememberToken($value) {
-    $this->rememberToken = $value;
-    return $this;
-  }
-  /**
-   * Get the column name for the "remember me" token.
-   *
-   * @return string
-   */
-  public function getRememberTokenName() {
-    return "rememberToken";
-  }
+			/**
+			 * @return mixed
+			 */
+			public function getUsername()
+			{
+				return $this->username;
+			}
 
-  /**
-   * @return \Doctrine\Common\Collections\ArrayCollection|\LaravelDoctrine\ACL\Contracts\Role[]
-   */
-  public function getRoles() {
-    return $this->roles;
-  }
+			/**
+			 * @param $username
+			 *
+			 * @return $this
+			 */
+			public function setUsername($username)
+			{
+				$this->username = $username;
 
-  /**
-   * @param OpeningHoursSpecification $openingHoursSpecification
-   * @return $this
-   */
-  public function addRoles(Role $role) {
-    if (!$this->roles->contains($role)) {
-      $this->roles->add($role);
-    }
-    return $this;
-  }
+				return $this;
+			}
 
-  /**
-   * @return mixed
-   */
-  public function getPermissions() {
-    return $this->permissions;
-  }
+			/**
+			 * @return mixed
+			 */
+			public function getEmail()
+			{
+				return $this->email;
+			}
 
-  /**
-   * @param mixed $permissions
-   * @return User
-   */
-  public function setPermissions($permissions) {
-    $this->permissions = $permissions;
-    return $this;
-  }
+			/**
+			 * @param $username
+			 *
+			 * @return $this
+			 */
+			public function setEmail($email)
+			{
+				$this->email = $email;
 
-  /**
-   * @return mixed
-   */
-  public function getAvatar() {
-    return $this->avatar;
-  }
+				return $this;
+			}
 
-  /**
-   * @param mixed $avatar
-   * @return User
-   */
-  public function setAvatar($avatar) {
-    $this->avatar = $avatar;
-    return $this;
-  }
+			/**
+			 * Get the token value for the "remember me" session.
+			 *
+			 * @return string
+			 */
+			public function getRememberToken()
+			{
+				return $this->rememberToken;
+			}
 
-  /**
-   * Get the nickname / username for the user.
-   *
-   * @return string
-   */
-  public function getNickname()
-  {
-    return $this->username;
-  }
+			/**
+			 * @param string $value
+			 *
+			 * @return $this
+			 */
+			public function setRememberToken($value)
+			{
+				$this->rememberToken = $value;
 
-  /**
-   * Gets the value of OTP.
-   *
-   * @return mixed
-   */
-  public function getOTP()
-  {
-      return $this->OTP;
-  }
+				return $this;
+			}
 
-  /**
-   * Sets the value of OTP.
-   *
-   * @param mixed $OTP the 
-   *
-   * @return self
-   */
-  public function setOTP($OTP)
-  {
-      $this->OTP = $OTP;
+			/**
+			 * Get the column name for the "remember me" token.
+			 *
+			 * @return string
+			 */
+			public function getRememberTokenName()
+			{
+				return "rememberToken";
+			}
 
-      return $this;
-  }
+			/**
+			 * @return \Doctrine\Common\Collections\ArrayCollection|\LaravelDoctrine\ACL\Contracts\Role[]
+			 */
+			public function getRoles()
+			{
+				return $this->roles;
+			}
 
-  /**
-   * @param UserGroup $userGroup
-   */
-  public function addSocialAccount(SocialAccount $socialAccount)
-  {
-    if ($this->socialAccounts->contains($socialAccount)) {
-        return;
-    }
-    $this->socialAccounts->add($socialAccount);
-    $socialAccount->addUser($this);
-  }
-  
-  /**
-   * @param UserGroup $userGroup
-   */
-  public function removeSocialAccount(SocialAccount $socialAccount)
-  {
-    if (!$this->socialAccounts->contains($socialAccount)) {
-        return;
-    }
-    $this->socialAccounts->removeElement($socialAccount);
-    $socialAccount->removeUser($this);
-  }
+			/**
+			 * @param OpeningHoursSpecification $openingHoursSpecification
+			 *
+			 * @return $this
+			 */
+			public function addRoles(Role $role)
+			{
+				if (!$this->roles->contains($role)) {
+					$this->roles->add($role);
+				}
 
-  /**
-   * Get the identifier that will be stored in the subject claim of the JWT
-   *
-   * @return mixed
-   */
-  public function getJWTIdentifier() {
-    return $this->getId();
-  }
-  /**
-   * Return a key value array, containing any custom claims to be added to the JWT
-   *
-   * @return array
-   */
-  public function getJWTCustomClaims() {
-    return [];
-  }
+				return $this;
+			}
 
-}
+			/**
+			 * @return mixed
+			 */
+			public function getPermissions()
+			{
+				return $this->permissions;
+			}
+
+			/**
+			 * @param mixed $permissions
+			 *
+			 * @return User
+			 */
+			public function setPermissions($permissions)
+			{
+				$this->permissions = $permissions;
+
+				return $this;
+			}
+
+			/**
+			 * @return mixed
+			 */
+			public function getAvatar()
+			{
+				return $this->avatar;
+			}
+
+			/**
+			 * @param mixed $avatar
+			 *
+			 * @return User
+			 */
+			public function setAvatar($avatar)
+			{
+				$this->avatar = $avatar;
+
+				return $this;
+			}
+
+			/**
+			 * Get the nickname / username for the user.
+			 *
+			 * @return string
+			 */
+			public function getNickname()
+			{
+				return $this->username;
+			}
+
+			/**
+			 * Gets the value of OTP.
+			 *
+			 * @return mixed
+			 */
+			public function getOTP()
+			{
+				return $this->OTP;
+			}
+
+			/**
+			 * Sets the value of OTP.
+			 *
+			 * @param mixed $OTP the
+			 *
+			 * @return self
+			 */
+			public function setOTP($OTP)
+			{
+				$this->OTP = $OTP;
+
+				return $this;
+			}
+
+			/**
+			 * addSocialAccount()
+			 *
+			 * @param \ApiArchitect\Auth\Entities\Social\SocialAccount $socialAccount
+			 */
+			public function addSocialAccount(SocialAccount $socialAccount)
+			{
+				if ($this->socialAccounts->contains($socialAccount)) {
+					return;
+				}
+				$this->socialAccounts->add($socialAccount);
+				$socialAccount->addUser($this);
+			}
+
+			/**
+			 * removeSocialAccount()
+			 *
+			 * @param \ApiArchitect\Auth\Entities\Social\SocialAccount $socialAccount
+			 */
+			public function removeSocialAccount(SocialAccount $socialAccount)
+			{
+				if (!$this->socialAccounts->contains($socialAccount)) {
+					return;
+				}
+				$this->socialAccounts->removeElement($socialAccount);
+				$socialAccount->removeUser($this);
+			}
+
+			/**
+			 * Get the identifier that will be stored in the subject claim of the JWT
+			 *
+			 * @return mixed
+			 */
+			public function getJWTIdentifier()
+			{
+				return $this->getId();
+			}
+
+			/**
+			 * Return a key value array, containing any custom claims to be added to the JWT
+			 *
+			 * @return array
+			 */
+			public function getJWTCustomClaims()
+			{
+				return [];
+			}
+
+			/**
+			 * @return mixed
+			 */
+			public function getFirstName()
+			{
+				return $this->firstName;
+			}
+
+			/**
+			 * @param mixed $firstName
+			 *
+			 * @return User
+			 */
+			public function setFirstName($firstName)
+			{
+				$this->firstName = $firstName;
+
+				return $this;
+			}
+
+			/**
+			 * @return mixed
+			 */
+			public function getLastName()
+			{
+				return $this->lastName;
+			}
+
+			/**
+			 * @param mixed $lastName
+			 *
+			 * @return User
+			 */
+			public function setLastName($lastName)
+			{
+				$this->lastName = $lastName;
+
+				return $this;
+			}
+
+		}
+	}

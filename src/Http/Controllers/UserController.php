@@ -4,7 +4,8 @@
 
 	use ApiArchitect\Auth\ApiArchitectAuth;
 	use ApiArchitect\Compass\Http\Controllers\ResourceApi;
-	use Tymon\JWTAuth\JWT;
+		use Jkirkby91\LumenRestServerComponent\Http\Controllers\ResourceController;
+		use Tymon\JWTAuth\JWT;
 	use Tymon\JWTAuth\JWTAuth;
 	use ApiArchitect\Auth\Entities\User;
 	use Psr\Http\Message\ServerRequestInterface;
@@ -13,6 +14,7 @@
 	use ApiArchitect\Compass\Http\Controllers\RestApi;
 	use Jkirkby91\Boilers\RestServerBoiler\TransformerContract AS ObjectTransformer;
 	use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
+	use Zend\Diactoros\Response\JsonResponse;
 
 	/**
 	 * Class USerController
@@ -20,7 +22,7 @@
 	 * @package app\Http\Controllers
 	 * @author James Kirkby <jkirkby91@gmail.com>
 	 */
-	final class UserController extends ResourceApi
+	final class UserController extends ResourceController
 	{
 
 		/**
@@ -47,7 +49,7 @@
 		 *
 		 * @return \Zend\Diactoros\Response\JsonResponse
 		 */
-		public function index(ServerRequestInterface $request)
+		public function index(ServerRequestInterface $request) : JsonResponse
 		{
 			$resource = $this->item($this->auth->getProvider()->user())
 				->transformWith($this->transformer)
@@ -73,6 +75,7 @@
 		 * @param \Psr\Http\Message\ServerRequestInterface $request
 		 *
 		 * @return \Zend\Diactoros\Response\JsonResponse
+		 * @TODO hook in a method to see if we need to confirm email, current hardcoded to false
 		 */
 		public function store(ServerRequestInterface $request) : \Zend\Diactoros\Response\JsonResponse
 		{
@@ -81,7 +84,8 @@
 
 			$userEntity = $this->repository->findOrCreateUser(
 				$userRegDetails['email'],
-				$userRegDetails['name'],
+				$userRegDetails['firstName'],
+				$userRegDetails['lastName'],
 				$userRegDetails['username'],
 				$userRegDetails['role'],
 				$userRegDetails['password']
@@ -92,6 +96,7 @@
 			$resource = $this->item($userEntity)
 				->transformWith($this->transformer)
 				->addMeta(['token' => $token])
+				->addMeta(['confirm' => false])
 				->serializeWith($this->serializer);
 
 			return $this->createdResponse($resource);

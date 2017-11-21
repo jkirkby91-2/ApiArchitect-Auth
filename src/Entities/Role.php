@@ -17,7 +17,7 @@ use ApiArchitect\Compass\Entities\AbstractResourceEntity;
  * @Gedmo\Loggable
  * @ORM\HasLifeCycleCallbacks
  * @ORM\Entity
- * @ORM\Table(name="role", indexes={@ORM\Index(name="name_idx", columns={"name"})})
+ * @ORM\Table(name="role", indexes={@ORM\Index(name="role_name_idx", columns={"name"})})
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\RoleRepository")
  */
 class Role extends AbstractResourceEntity implements RoleContract

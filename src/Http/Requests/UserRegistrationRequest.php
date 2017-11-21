@@ -39,10 +39,12 @@
 
 			return [
 				'POST' => [
-					'name' => 'required|max:255',
+					'firstName' => 'required|max:255',
+					'lastName' => 'required|max:255',
 					'email' => 'required|email|max:255|unique:ApiArchitect\Auth\Entities\User,email',
 					'username' => 'required|max:255|unique:ApiArchitect\Auth\Entities\User,username',
-					'password' => 'required|min:8',
+					'password' => 'required|min:6',
+					'passwordConfirm' => 'required|min:6',
 					'role'    => 'required|exists:ApiArchitect\Auth\Entities\Role,name'
 				]
 			];

@@ -11,7 +11,7 @@ use ApiArchitect\Compass\Entities\AbstractResourceEntity;
  *
  * @package ApiArchitect\Auth\Entities\Social
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\SocialAccountRepository")
- * @ORM\Table(name="provider", indexes={@ORM\Index(name="search_idx", columns={"name"})})
+ * @ORM\Table(name="provider", indexes={@ORM\Index(name="provider_search_idx", columns={"name"})})
  * @Gedmo\Loggable
  * @ORM\HasLifecycleCallbacks
  *

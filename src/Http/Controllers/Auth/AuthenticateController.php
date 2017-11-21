@@ -33,11 +33,6 @@
 		protected $auth;
 
 		/**
-		 * @var
-		 */
-		protected $token;
-
-		/**
 		 * @var \Jkirkby91\Boilers\RestServerBoiler\TransformerContract
 		 */
 		protected $authTokenTransformer;
@@ -75,8 +70,9 @@
 		 */
 		public function authenticate(ServerRequestInterface $request)
 		{
+
 			try {
-				if (! $this->token = $this->auth->attempt($request->getParsedBody())) {
+				if (! $this->auth->getProvider()->byCredentials($request->getParsedBody())) {
 					return $this->UnauthorizedResponse();
 				}
 			} catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
@@ -85,12 +81,12 @@
 				return $this->notFoundResponse();
 			}
 
-			$token = $this->item($this->token)
+			$resource = $this->item($this->auth->fromSubject($this->auth->getProvider()->user()))
 				->transformWith($this->authTokenTransformer)
 				->serializeWith(new ArraySerialization())
 				->toArray();
 
-			return $this->showResponse($token);
+			return $this->showResponse($resource);
 		}
 
 		/**

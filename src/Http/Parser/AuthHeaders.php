@@ -32,7 +32,6 @@ class AuthHeaders implements JWTParserContract
      */
     protected function fromAltHeaders(ServerRequestInterface $request)
     {
-        // dd($request->getHeaders());
         return $request->getHeader('HTTP_AUTHORIZATION') ?: $request->getHeader('REDIRECT_HTTP_AUTHORIZATION');
     }
 

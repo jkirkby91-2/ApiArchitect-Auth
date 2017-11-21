@@ -41,7 +41,7 @@
 		{
 			$this->app->bind(
 				\Tymon\JWTAuth\Contracts\JWTSubject::class,
-				\AApiArchitect\Auth\Entities\User::class
+				\ApiArchitect\Auth\Entities\User::class
 			);
 		}
 		

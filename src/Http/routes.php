@@ -5,7 +5,11 @@ $this->app->group(['middleware' => ['before' => 'psr7adapter', 'after' => 'apiar
 });
 
 $this->app->group(['middleware' => ['before' => 'psr7adapter', 'after' => 'apiarchitect.auth']], function ($app){
-    resource('user','ApiArchitect\Auth\Http\Controllers\UserController');
+	$this->app->get('/user', 'ApiArchitect\Auth\Http\Controllers\UserController@index');
+	$this->app->get('/user/{id}', 'ApiArchitect\Auth\Http\Controllers\UserController@show');
+	$this->app->post('/user', 'ApiArchitect\Auth\Http\Controllers\UserController@store');
+	$this->app->put('/user/{id}', 'ApiArchitect\Auth\Http\Controllers\UserController@update');
+	$this->app->delete('/user/{id}','ApiArchitect\Auth\Http\Controllers\UserController@destroy');
 });
 
 $this->app->group(['middleware' => ['before' => 'psr7adapter', 'after' => 'validateRequest:ApiArchitect\Auth\Http\Requests\UserRegistrationRequest']], function ($app)
