@@ -1,65 +1,79 @@
 <?php
+	declare(strict_types=1);
 
-	namespace ApiArchitect\Auth\Contracts;
+	namespace ApiArchitect\Auth\Contracts {
 
-	use Psr\Http\Message\ServerRequestInterface;
-
-	/**
-	 * Interface JWTRequestParserContract
-	 *
-	 * @package ApiArchitect\Auth\Contracts
-	 * @author  James Kirkby <jkirkby@protonmail.ch>
-	 */
-	interface JWTRequestParserContract
-	{
+		use Psr\{
+			Http\Message\ServerRequestInterface
+		};
 
 		/**
-		 * Get the parser chain.
+		 * Interface JWTRequestParserContract
 		 *
-		 * @return array
+		 * @package ApiArchitect\Auth\Contracts
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
 		 */
-		public function getChain();
+		interface JWTRequestParserContract
+		{
 
-		/**
-		 * Set the order of the parser chain.
-		 *
-		 * @param  array  $chain
-		 *
-		 * @return $this
-		 */
-		public function setChain(array $chain);
+			/**
+			 * Get the parser chain.
+			 *
+			 * @return array
+			 */
+			public function getChain() : array;
 
-		/**
-		 * Alias for setting the order of the chain.
-		 *
-		 * @param  array  $chain
-		 *
-		 * @return $this
-		 */
-		public function setChainOrder(array $chain);
+			/**
+			 * setChain()
+			 *
+			 * Set the order of the parser chain.
+			 *
+			 * @param array $chain
+			 *
+			 * @return \ApiArchitect\Auth\Contracts\JWTRequestParserContract
+			 */
+			public function setChain(array $chain) : JWTRequestParserContract;
 
-		/**
-		 * Iterate through the parsers and attempt to retrieve
-		 * a value, otherwise return null.
-		 *
-		 * @return string|null
-		 */
-		public function parseToken();
+			/**
+			 * setChainOrder()
+			 *
+			 * Alias for setting the order of the chain.
+			 *
+			 * @param array $chain
+			 *
+			 * @return \ApiArchitect\Auth\Contracts\JWTRequestParserContract
+			 */
+			public function setChainOrder(array $chain) : JWTRequestParserContract;
 
-		/**
-		 * Check whether a token exists in the chain.
-		 *
-		 * @return bool
-		 */
-		public function hasToken();
+			/**
+			 * parseToken()
+			 *
+			 * Iterate through the parsers and attempt to retrieve
+			 * a value, otherwise return null.
+			 *
+			 * @return string
+			 */
+			public function parseToken() : string;
 
-		/**
-		 * Set the request instance.
-		 *
-		 * @param  \Illuminate\Http\Request  $request
-		 *
-		 * @return $this
-		 */
-		public function setRequest(ServerRequestInterface $request);
+			/**
+			 * hasToken()
+			 *
+			 * Check whether a token exists in the chain.
+			 *
+			 * @return bool
+			 */
+			public function hasToken() : bool ;
 
+			/**
+			 * setRequest()
+			 *
+			 * Set the request instance.
+			 *
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return \ApiArchitect\Auth\Contracts\JWTRequestParserContract
+			 */
+			public function setRequest(ServerRequestInterface $request) : JWTRequestParserContract;
+
+		}
 	}

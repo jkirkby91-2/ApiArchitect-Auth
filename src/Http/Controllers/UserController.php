@@ -1,216 +1,225 @@
 <?php
+	declare(strict_types=1);
 
-	namespace ApiArchitect\Auth\Http\Controllers;
+	namespace ApiArchitect\Auth\Http\Controllers {
 
-	use ApiArchitect\Auth\ApiArchitectAuth;
-	use ApiArchitect\Compass\Http\Controllers\ResourceApi;
-	use Tymon\JWTAuth\JWT;
-	use Tymon\JWTAuth\JWTAuth;
-	use ApiArchitect\Auth\Entities\User;
-	use Psr\Http\Message\ServerRequestInterface;
-	use Jkirkby91\Boilers\RestServerBoiler\Exceptions;
-	use Spatie\Fractal\ArraySerializer AS ArraySerialization;
-	use ApiArchitect\Compass\Http\Controllers\RestApi;
-	use Jkirkby91\Boilers\RestServerBoiler\TransformerContract AS ObjectTransformer;
-	use Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract AS ResourceRepository;
+		use ApiArchitect\{
+			Auth\ApiArchitectAuth
+		};
 
-	/**
-	 * Class USerController
-	 *
-	 * @package app\Http\Controllers
-	 * @author James Kirkby <jkirkby91@gmail.com>
-	 */
-	final class UserController extends ResourceApi
-	{
+		use Jkirkby91\{
+			Boilers\RestServerBoiler\Exceptions,
+			LumenRestServerComponent\Http\Controllers\ResourceController,
+			Boilers\RestServerBoiler\TransformerContract as ObjectTransformer,
+			Boilers\RepositoryBoiler\ResourceRepositoryContract as ResourceRepository
+		};
 
-		/**
-		 * @var \ApiArchitect\Auth\ApiArchitectAuth
-		 */
-		protected $auth;
+		use Psr\{
+			Http\Message\ServerRequestInterface
+		};
+
+		use Spatie\{
+			Fractal\ArraySerializer as ArraySerialization
+		};
+
+		use Zend\{
+			Diactoros\Response\JsonResponse
+		};
 
 		/**
-		 * UserController constructor.
+		 * Class UserController
 		 *
-		 * @param \Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract $repository
-		 * @param \Jkirkby91\Boilers\RestServerBoiler\TransformerContract        $objectTransformer
-		 * @param \ApiArchitect\Auth\ApiArchitectAuth                            $auth
+		 * @package ApiArchitect\Auth\Http\Controllers
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
 		 */
-		public function __construct(ResourceRepository $repository, ObjectTransformer $objectTransformer, ApiArchitectAuth $auth)
-		{
-			$this->auth = $auth;
-			parent::__construct($repository,$objectTransformer);
-		}
-
-		/**
-		 * index()
-		 * @param \Psr\Http\Message\ServerRequestInterface $request
-		 *
-		 * @return \Zend\Diactoros\Response\JsonResponse
-		 */
-		public function index(ServerRequestInterface $request)
-		{
-			$resource = $this->item($this->auth->getProvider()->user())
-				->transformWith($this->transformer)
-				->serializeWith(new ArraySerialization())
-				->toArray();
-
-			return $this->showResponse($resource);
-		}
-
-		/**
-		 * register()
-		 * @param \Psr\Http\Message\ServerRequestInterface $request
-		 *
-		 * @return mixed
-		 */
-		public function register(ServerRequestInterface $request)
-		{
-			return $this->store($request);
-		}
-
-		/**
-		 * store()
-		 * @param \Psr\Http\Message\ServerRequestInterface $request
-		 *
-		 * @return \Zend\Diactoros\Response\JsonResponse
-		 */
-		public function store(ServerRequestInterface $request) : \Zend\Diactoros\Response\JsonResponse
+		final class UserController extends ResourceController
 		{
 
-			$userRegDetails = $request->getParsedBody();
+			/**
+			 * @var \ApiArchitect\Auth\ApiArchitectAuth $auth
+			 */
+			protected $auth;
 
-			$userEntity = $this->repository->findOrCreateUser(
-				$userRegDetails['email'],
-				$userRegDetails['name'],
-				$userRegDetails['username'],
-				$userRegDetails['role'],
-				$userRegDetails['password']
-			);
-
-			$token = $this->auth->fromUser($userEntity);
-
-			$resource = $this->item($userEntity)
-				->transformWith($this->transformer)
-				->addMeta(['token' => $token])
-				->serializeWith($this->serializer);
-
-			return $this->createdResponse($resource);
-		}
-
-		/**
-		 * update()
-		 * @param \Psr\Http\Message\ServerRequestInterface $request
-		 * @param                                          $id
-		 *
-		 * @return \Zend\Diactoros\Response\JsonResponse
-		 */
-		public function update(ServerRequestInterface $request, $id) : \Zend\Diactoros\Response\JsonResponse
-		{
-			$userProfileDetails = $request->getParsedBody();
-
-			try {
-				if (!$data = $this->repository->findUserFromEmail($this->auth->getUser()->getEmail())) {
-					throw new Exceptions\NotFoundHttpException();
-				}
-			} catch (Exceptions\NotFoundHttpException $exception) {
-				$this->notFoundResponse();
+			/**
+			 * UserController constructor.
+			 *
+			 * @param \Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract $repository
+			 * @param \Jkirkby91\Boilers\RestServerBoiler\TransformerContract        $objectTransformer
+			 * @param \ApiArchitect\Auth\ApiArchitectAuth                            $auth
+			 */
+			public function __construct(ResourceRepository $repository, ObjectTransformer $objectTransformer, ApiArchitectAuth $auth)
+			{
+				$this->auth = $auth;
+				parent::__construct($repository,$objectTransformer);
 			}
 
-			// if (isset($userProfileDetails['roles'])) {
-			//   $data = $data->addRoles($userProfileDetails['roles']);
-			// }
+			/**
+			 * index()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return \Zend\Diactoros\Response\JsonResponse
+			 */
+			public function index(ServerRequestInterface $request) : JsonResponse
+			{
+				$resource = $this->item($this->auth->getProvider()->user())
+					->transformWith($this->transformer)
+					->serializeWith(new ArraySerialization())
+					->toArray();
 
-			if (isset($userProfileDetails['name'])) {
-				$data = $data->setName($userProfileDetails['name']);
+				return $this->showResponse($resource);
 			}
 
-			if (isset($userProfileDetails['username'])) {
-				$data = $data->setUserName($userProfileDetails['username']);
+			/**
+			 * register()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return \Zend\Diactoros\Response\JsonResponse
+			 */
+			public function register(ServerRequestInterface $request) : JsonResponse
+			{
+				return $this->store($request);
 			}
 
-			if (isset($userProfileDetails['email'])) {
-				$data = $data->setEmail($userProfileDetails['email']);
+			/**
+			 * store()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return \Zend\Diactoros\Response\JsonResponse
+			 * @TODO hook in a method to see if we need to confirm email, current hardcoded to false
+			 */
+			public function store(ServerRequestInterface $request) : \Zend\Diactoros\Response\JsonResponse
+			{
+
+				$userRegDetails = $request->getParsedBody();
+
+				$userEntity = $this->repository->findOrCreateUser(
+					$userRegDetails['email'],
+					$userRegDetails['firstName'],
+					$userRegDetails['lastName'],
+					$userRegDetails['username'],
+					$userRegDetails['role'],
+					$userRegDetails['password']
+				);
+
+				$token = $this->auth->fromUser($userEntity);
+
+				$resource = $this->item($userEntity)
+					->transformWith($this->transformer)
+					->addMeta(['token' => $token])
+					->addMeta(['confirm' => false])
+					->serializeWith($this->serializer);
+
+				return $this->createdResponse($resource);
 			}
 
-			//@TODO Create a new route for password resets that does some validation middleware
-			if (isset($userProfileDetails['password'])) {
+			/**
+			 * update()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 * @param                                          $id
+			 *
+			 * @return \Zend\Diactoros\Response\JsonResponse
+			 */
+			public function update(ServerRequestInterface $request, int $id) : \Zend\Diactoros\Response\JsonResponse
+			{
+				$userProfileDetails = $request->getParsedBody();
 
 				try {
-					if ($userProfileDetails['password'] !== $userProfileDetails['password_confirmation']) {
-						throw new Exceptions\UnprocessableEntityException('Passwords do not match');
+					if (!$data = $this->repository->findUserFromEmail($this->auth->getUser()->getEmail())) {
+						throw new Exceptions\NotFoundHttpException();
 					}
-				} catch (Exceptions\UnprocessableEntityException $exception) {
-					$this->clientErrorResponse($exception->getMessage());
+				} catch (Exceptions\NotFoundHttpException $exception) {
+					$this->notFoundResponse();
 				}
 
-				$data = $data->setPassword($userProfileDetails['password']);
+				// if (isset($userProfileDetails['roles'])) {
+				//   $data = $data->addRoles($userProfileDetails['roles']);
+				// }
+
+				if (isset($userProfileDetails['name'])) {
+					$data = $data->setName($userProfileDetails['name']);
+				}
+
+				if (isset($userProfileDetails['username'])) {
+					$data = $data->setUserName($userProfileDetails['username']);
+				}
+
+				if (isset($userProfileDetails['email'])) {
+					$data = $data->setEmail($userProfileDetails['email']);
+				}
+
+				//@TODO Create a new route for password resets that does some validation middleware
+				if (isset($userProfileDetails['password'])) {
+
+					try {
+						if ($userProfileDetails['password'] !== $userProfileDetails['password_confirmation']) {
+							throw new Exceptions\UnprocessableEntityException('Passwords do not match');
+						}
+					} catch (Exceptions\UnprocessableEntityException $exception) {
+						$this->clientErrorResponse($exception->getMessage());
+					}
+
+					$data = $data->setPassword($userProfileDetails['password']);
+				}
+
+				if (isset($userProfileDetails['permissions'])) {
+					$data = $data->setPermissions($userProfileDetails['permissions']);
+				}
+
+				$this->repository->update($data);
+
+				$resource = $this->item($data)
+					->transformWith($this->transformer)
+					->serializeWith($this->serializer)
+					->toArray();
+
+				return $this->createdResponse($resource);
 			}
 
-			if (isset($userProfileDetails['permissions'])) {
-				$data = $data->setPermissions($userProfileDetails['permissions']);
-			}
-
-			$this->repository->update($data);
-
-			$resource = $this->item($data)
-				->transformWith($this->transformer)
-				->serializeWith($this->serializer)
-				->toArray();
-
-			return $this->createdResponse($resource);
-		}
-
-		/**
-		 * checkUniqueEmail()
-		 *
-		 * @TODO check email is unique
-		 * 
-		 * @param \Psr\Http\Message\ServerRequestInterface $request
-		 *
-		 * @return bool
-		 */
-		public function checkUniqueEmail(ServerRequestInterface $request)
-		{
-			$emailTarget = $request->getParsedBody();
-
-			if (!in_array('email', $emailTarget))
+			/**
+			 * checkUniqueEmail()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return \Zend\Diactoros\Response\JsonResponse
+			 */
+			public function checkUniqueEmail(ServerRequestInterface $request) : JsonResponse
 			{
-				throw new Exceptions\UnprocessableEntityException('no email defined');
+				$emailTarget = $request->getParsedBody();
+
+				if (!in_array('email', $emailTarget))
+				{
+					return $this->clientErrorResponse();
+				}
+
+				$userEntity = $this->repository->findUserFromEmail($emailTarget['email']);
+
+				if (is_null($userEntity)) {
+					return $this->completedResponse();
+				} else {
+					return $this->notFoundResponse();
+				}
 			}
 
-			$userEntity = $this->repository->findUserFromEmail($emailTarget['email']);
-
-			if (is_null($userEntity)) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		/**
-		 * checkUniqueUserName()
-		 *
-		 * @TODO chcek username is unique
-		 * 
-		 * @param \Psr\Http\Message\ServerRequestInterface $request
-		 *
-		 * @return bool
-		 */
-		public function checkUniqueUserName(ServerRequestInterface $request)
-		{
-			$userNameTarget = $request->getParsedBody();
-
-			if (!in_array('username', $userNameTarget))
+			/**
+			 * checkUniqueUserName()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return \Zend\Diactoros\Response\JsonResponse
+			 */
+			public function checkUniqueUserName(ServerRequestInterface $request) : JsonResponse
 			{
-				throw new Exceptions\UnprocessableEntityException('no username defined');
-			}
+				$userNameTarget = $request->getParsedBody();
 
-			$userEntity = $this->repository->FindUserFromUserName($userNameTarget['username']);
+				if (!in_array('username', $userNameTarget)) {
+					return $this->clientErrorResponse('no username defined');
+				}
 
-			if (is_null($userEntity)) {
-				return true;
-			} else {
-				return false;
+				$userEntity = $this->repository->FindUserFromUserName($userNameTarget['username']);
+
+				if (is_null($userEntity)) {
+					return $this->completedResponse();
+				} else {
+					return $this->notFoundResponse();
+				}
 			}
 		}
 	}

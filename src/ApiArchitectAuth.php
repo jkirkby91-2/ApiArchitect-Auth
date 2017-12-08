@@ -1,397 +1,374 @@
 <?php
-	
-	/**
-	 * Project: digitalnomads-api
-	 *
-	 * @author: James Kirkby <jkirkby@protonmail.ch>
-	 * Copyright: Blacksands.Network
-	 * File: ApiArchitectAuth.php
-	 * Date: 27/06/2017
-	 * Time: 22:17
-	 */
+	declare(strict_types=1);
 
-	namespace ApiArchitect\Auth;
+	namespace ApiArchitect\Auth {
 
-	use Tymon\JWTAuth\Manager;
-	use Tymon\JWTAuth\Contracts\Providers\Auth;
-	use ApiArchitect\Auth\Contracts\JWTRequestParserContract;
-	use Tymon\JWTAuth\Support\CustomClaims;
+		use Psr\Http\Message\ServerRequestInterface;
+		use Symfony\Component\Console\Exception\LogicException;
+		use Tymon\{
+			JWTAuth\Blacklist, JWTAuth\Factory, JWTAuth\Manager, JWTAuth\Contracts\Providers\Auth, JWTAuth\Payload, JWTAuth\Support\CustomClaims, JWTAuth\Token
+		};
 
-	/**
-	 * Class ApiArchitectAuth
-	 *
-	 * @package ApiArchitect\Auth
-	 * @author  James Kirkby <jkirkby@protonmail.ch>
-	 */
-	class ApiArchitectAuth
-	{
-		use CustomClaims;
-		
+		use ApiArchitect\{
+			Auth\Contracts\JWTRequestParserContract, Auth\Entities\User
+		};
+
 		/**
-		 * @var \Tymon\JWTAuth\Contracts\Providers\Auth
-		 */
-		protected $provider;
-		
-		/**
-		 * The authentication manager.
+		 * Class ApiArchitectAuth
 		 *
-		 * @var \Tymon\JWTAuth\Manager
+		 * @package ApiArchitect\Auth
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
 		 */
-		protected $manager;
-
-		/**
-		 * @var \ApiArchitect\Auth\Contracts\JWTParserContract|\ApiArchitect\Auth\Contracts\JWTRequestParserContract
-		 */
-		protected $parser;
-
-		/**
-		 * @var mixed
-		 */
-		protected $user;
-
-		/**
-		 * ApiArchitectAuth constructor.
-		 *
-		 * @param \Tymon\JWTAuth\Manager                         $manager
-		 * @param \Tymon\JWTAuth\Contracts\Providers\Auth        $auth
-		 * @param \ApiArchitect\Auth\Contracts\JWTParserContract $parser
-		 */
-		public function __construct(Manager $manager, Auth $auth, JWTRequestParserContract $parser)
+		class ApiArchitectAuth
 		{
-			$this->provider = $auth;
-			$this->manager = $manager;
-			$this->parser = $parser;
-			$this->user = $this->provider->user();
-		}
+			use CustomClaims;
 
-		/**
-		 * getParser()
-		 * @return \ApiArchitect\Auth\Contracts\JWTParserContract|\ApiArchitect\Auth\Contracts\JWTRequestParserContract
-		 */
-		public function getParser() {
-			return $this->parser;
-		}
+			/**
+			 * @var \Tymon\JWTAuth\Contracts\Providers\Auth $provider
+			 */
+			protected $provider;
 
-		/**
-		 * getProvider()
-		 * @return \Tymon\JWTAuth\Contracts\Providers\Auth
-		 */
-		public function getProvider() {
-			return $this->provider;
-		}
+			/**
+			 * The authentication manager.
+			 *
+			 * @var \Tymon\JWTAuth\Manager $manager
+			 */
+			protected $manager;
 
-		/**
-		 * getManager()
-		 * @return \Tymon\JWTAuth\Manager
-		 */
-		public function getManager()
-		{
-			return $this->manager;
-		}
+			/**
+			 * @var \ApiArchitect\Auth\Contracts\JWTParserContract|\ApiArchitect\Auth\Contracts\JWTRequestParserContract $parser
+			 */
+			protected $parser;
 
-		/**
-		 * getUser()
-		 * @return mixed
-		 */
-		public function getUser()
-		{
-			return $this->user;
-		}
+			/**
+			 * @var \ApiArchitect\Auth\Entities\User $user
+			 */
+			protected $user;
 
-		/**
-		 * Generate a token for a given subject.
-		 *
-		 * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $subject
-		 *
-		 * @return string
-		 */
-		public function fromSubject($subject)
-		{
-			$payload = $this->makePayload($subject);
-
-			return $this->manager->encode($payload)->get();
-		}
-
-		/**
-		 * Alias to generate a token for a given user.
-		 *
-		 * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $user
-		 *
-		 * @return string
-		 */
-		public function fromUser($user)
-		{
-			return $this->fromSubject($user);
-		}
-
-		/**
-		 * Refresh an expired token.
-		 *
-		 * @param  bool  $forceForever
-		 * @param  bool  $resetClaims
-		 *
-		 * @return string
-		 */
-		public function refresh($forceForever = false, $resetClaims = false)
-		{
-			$this->requireToken();
-
-			return $this->manager->customClaims($this->getCustomClaims())
-				->refresh($this->token, $forceForever, $resetClaims)
-				->get();
-		}
-
-		/**
-		 * Invalidate a token (add it to the blacklist).
-		 *
-		 * @param  bool  $forceForever
-		 *
-		 * @return $this
-		 */
-		public function invalidate($forceForever = false)
-		{
-			$this->requireToken();
-
-			$this->manager->invalidate($this->token, $forceForever);
-
-			return $this;
-		}
-
-		/**
-		 * Alias to get the payload, and as a result checks that
-		 * the token is valid i.e. not expired or blacklisted.
-		 *
-		 * @throws \Tymon\JWTAuth\Exceptions\JWTException
-		 *
-		 * @return \Tymon\JWTAuth\Payload
-		 */
-		public function checkOrFail()
-		{
-			return $this->getPayload();
-		}
-
-		/**
-		 * Check that the token is valid.
-		 *
-		 * @return bool
-		 */
-		public function check()
-		{
-			try {
-				$this->checkOrFail();
-			} catch (JWTException $e) {
-				return false;
+			/**
+			 * ApiArchitectAuth constructor.
+			 *
+			 * @param \Tymon\JWTAuth\Manager                                $manager
+			 * @param \Tymon\JWTAuth\Contracts\Providers\Auth               $auth
+			 * @param \ApiArchitect\Auth\Contracts\JWTRequestParserContract $parser
+			 */
+			public function __construct(Manager $manager, Auth $auth, JWTRequestParserContract $parser)
+			{
+				$this->manager = $manager;
+				$this->provider = $auth;
+				$this->parser = $parser;
+				$this->user = $this->provider->user();
 			}
 
-			return true;
-		}
+			/**
+			 * getParser()
+			 * @return \ApiArchitect\Auth\Contracts\JWTRequestParserContract
+			 */
+			public function getParser() : JWTRequestParserContract
+			{
+				return $this->parser;
+			}
 
-		/**
-		 * Get the token.
-		 *
-		 * @return \Tymon\JWTAuth\Token|false
-		 */
-		public function getToken()
-		{
-			if (! $this->token) {
+			/**
+			 * getProvider()
+			 * @return \Tymon\JWTAuth\Contracts\Providers\Auth
+			 */
+			public function getProvider()
+			{
+				return $this->provider;
+			}
+
+			/**
+			 * getManager()
+			 * @return \Tymon\JWTAuth\Manager
+			 */
+			public function getManager()
+			{
+				return $this->manager;
+			}
+
+			/**
+			 * getUser()
+			 * @return mixed
+			 */
+			public function getUser() : User
+			{
+				return $this->user;
+			}
+
+			/**
+			 * fromSubject()
+			 * @param \ApiArchitect\Auth\Entities\User $subject
+			 *
+			 * @return string
+			 */
+			public function fromSubject(User $subject) : string
+			{
+				$payload = $this->makePayload($subject);
+
+				return $this->manager->encode($payload)->get();
+			}
+
+			/**
+			 * fromUser()
+			 * @param \ApiArchitect\Auth\Entities\User $user
+			 *
+			 * @return string
+			 */
+			public function fromUser(User $user) : string
+			{
+				return $this->fromSubject($user);
+			}
+
+			/**
+			 * refresh()
+			 * @param bool $forceForever
+			 * @param bool $resetClaims
+			 *
+			 * @return string
+			 */
+			public function refresh(bool $forceForever = false, bool $resetClaims = false) : string
+			{
+				$this->requireToken();
+
+				return $this->manager->customClaims($this->getCustomClaims())
+					->refresh($this->token, $forceForever, $resetClaims)
+					->get();
+			}
+
+			/**
+			 * invalidate()
+			 * @param bool $forceForever
+			 *
+			 * @return $this
+			 * @throws \Tymon\JWTAuth\Exceptions\JWTException
+			 */
+			public function invalidate(bool $forceForever = false) : ApiArchitectAuth
+			{
+				$this->requireToken();
+
+				$this->manager->invalidate($this->token, $forceForever);
+
+				return $this;
+			}
+
+			/**
+			 * checkOrFail()
+			 * @return \Tymon\JWTAuth\Payload
+			 */
+			public function checkOrFail() : Payload
+			{
+				return $this->getPayload();
+			}
+
+			/**
+			 * check()
+			 * @return bool
+			 */
+			public function check() : bool
+			{
 				try {
-					$this->parseToken();
+					$this->checkOrFail();
 				} catch (JWTException $e) {
 					return false;
 				}
+
+				return true;
 			}
 
-			return $this->token;
-		}
+			/**
+			 * getToken()
+			 * @return \Tymon\JWTAuth\Token
+			 */
+			public function getToken() : Token
+			{
+				if (! $this->token) {
+					try {
+						$this->parseToken();
+					} catch (JWTException $e) {
+						throw new \LogicException();
+					}
+				}
 
-		/**
-		 * Parse the token from the request.
-		 *
-		 * @throws \Tymon\JWTAuth\Exceptions\JWTException
-		 *
-		 * @return $this
-		 */
-		public function parseToken()
-		{
-			if (! $token = $this->parser->parseToken()) {
-				throw new JWTException('The token could not be parsed from the request');
+				return $this->token;
 			}
 
-			return $this->setToken($token);
-		}
+			/**
+			 * parseToken()
+			 * @return \ApiArchitect\Auth\ApiArchitectAuth
+			 */
+			public function parseToken() : ApiArchitectAuth
+			{
+				if (! $token = $this->parser->parseToken()) {
+					throw new JWTException('The token could not be parsed from the request');
+				}
 
-		/**
-		 * Get the raw Payload instance.
-		 *
-		 * @return \Tymon\JWTAuth\Payload
-		 */
-		public function getPayload()
-		{
-			$this->requireToken();
-
-			return $this->manager->decode($this->token);
-		}
-
-		/**
-		 * Alias for getPayload().
-		 *
-		 * @return \Tymon\JWTAuth\Payload
-		 */
-		public function payload()
-		{
-			return $this->getPayload();
-		}
-
-		/**
-		 * Convenience method to get a claim value.
-		 *
-		 * @param  string  $claim
-		 *
-		 * @return mixed
-		 */
-		public function getClaim($claim)
-		{
-			return $this->payload()->get($claim);
-		}
-
-		/**
-		 * Create a Payload instance.
-		 *
-		 * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $subject
-		 *
-		 * @return \Tymon\JWTAuth\Payload
-		 */
-		public function makePayload( $subject)
-		{
-			return $this->factory()->customClaims($this->getClaimsArray($subject))->make();
-		}
-
-		/**
-		 * Build the claims array and return it.
-		 *
-		 * @param  \Tymon\JWTAuth\Contracts\JWTSubject  $subject
-		 *
-		 * @return array
-		 */
-		protected function getClaimsArray( $subject)
-		{
-			return array_merge(
-				['sub' => $subject->getJWTIdentifier()],
-				$this->customClaims, // custom claims from inline setter
-				$subject->getJWTCustomClaims() // custom claims from JWTSubject method
-			);
-		}
-
-		/**
-		 * Set the token.
-		 *
-		 * @param  \Tymon\JWTAuth\Token|string  $token
-		 *
-		 * @return $this
-		 */
-		public function setToken($token)
-		{
-			$this->token = $token instanceof Token ? $token : new Token($token);
-
-			return $this;
-		}
-
-		/**
-		 * Unset the current token.
-		 *
-		 * @return $this
-		 */
-		public function unsetToken()
-		{
-			$this->token = null;
-
-			return $this;
-		}
-
-		/**
-		 * Ensure that a token is available.
-		 *
-		 * @throws \Tymon\JWTAuth\Exceptions\JWTException
-		 *
-		 * @return void
-		 */
-		protected function requireToken()
-		{
-			if (! $this->token) {
-				throw new JWTException('A token is required');
-			}
-		}
-
-		/**
-		 * Set the request instance.
-		 *
-		 * @param  \Illuminate\Http\Request  $request
-		 *
-		 * @return $this
-		 */
-		public function setRequest(Request $request)
-		{
-			$this->parser->setRequest($request);
-
-			return $this;
-		}
-
-		/**
-		 * Get the Manager instance.
-		 *
-		 * @return \Tymon\JWTAuth\Manager
-		 */
-		public function manager()
-		{
-			return $this->manager;
-		}
-
-		/**
-		 * Get the Parser instance.
-		 *
-		 * @return \Tymon\JWTAuth\Http\Parser\Parser
-		 */
-		public function parser()
-		{
-			return $this->parser;
-		}
-
-		/**
-		 * Get the Payload Factory.
-		 *
-		 * @return \Tymon\JWTAuth\Factory
-		 */
-		public function factory()
-		{
-			return $this->manager->getPayloadFactory();
-		}
-
-		/**
-		 * Get the Blacklist.
-		 *
-		 * @return \Tymon\JWTAuth\Blacklist
-		 */
-		public function blacklist()
-		{
-			return $this->manager->getBlacklist();
-		}
-
-		/**
-		 * Magically call the JWT Manager.
-		 *
-		 * @param  string  $method
-		 * @param  array  $parameters
-		 *
-		 * @throws \BadMethodCallException
-		 *
-		 * @return mixed
-		 */
-		public function __call($method, $parameters)
-		{
-			if (method_exists($this->manager, $method)) {
-				return call_user_func_array([$this->manager, $method], $parameters);
+				return $this->setToken($token);
 			}
 
-			throw new BadMethodCallException("Method [$method] does not exist.");
+			/**
+			 * getPayload()
+			 * @return \Tymon\JWTAuth\Payload
+			 * @throws \Tymon\JWTAuth\Exceptions\TokenBlacklistedException
+			 */
+			public function getPayload() : Payload
+			{
+				$this->requireToken();
+
+				return $this->manager->decode($this->token);
+			}
+
+			/**
+			 * payload()
+			 * @return \Tymon\JWTAuth\Payload
+			 * @throws \Tymon\JWTAuth\Exceptions\TokenBlacklistedException
+			 */
+			public function payload() : Payload
+			{
+				return $this->getPayload();
+			}
+
+			/**
+			 * getClaim()
+			 * @param string $claim
+			 *
+			 * @return \Tymon\JWTAuth\Payload
+			 * @throws \Tymon\JWTAuth\Exceptions\TokenBlacklistedException
+			 */
+			public function getClaim(string $claim) : Payload
+			{
+				return $this->payload()->get($claim);
+			}
+
+			/**
+			 * makePayload()
+			 * @param \ApiArchitect\Auth\Entities\User $subject
+			 *
+			 * @return \Tymon\JWTAuth\Payload
+			 */
+			public function makePayload(User $subject) : Payload
+			{
+				return $this->factory()->customClaims($this->getClaimsArray($subject))->make();
+			}
+
+			/**
+			 * getClaimsArray()
+			 * @param \ApiArchitect\Auth\Entities\User $subject
+			 *
+			 * @return array
+			 */
+			protected function getClaimsArray(User $subject) : array
+			{
+				return array_merge(
+					['sub' => $subject->getJWTIdentifier()],
+					$this->customClaims, // custom claims from inline setter
+					$subject->getJWTCustomClaims() // custom claims from JWTSubject method
+				);
+			}
+
+			/**
+			 * setToken()
+			 * @param $token
+			 *
+			 * @return \ApiArchitect\Auth\ApiArchitectAuth
+			 */
+			public function setToken($token) : ApiArchitectAuth
+			{
+				$this->token = $token instanceof Token ? $token : new Token($token);
+
+				return $this;
+			}
+
+			/**
+			 * unsetToken()
+			 * @return \ApiArchitect\Auth\ApiArchitectAuth
+			 */
+			public function unsetToken() : ApiArchitectAuth
+			{
+				$this->token = null;
+
+				return $this;
+			}
+
+			/**
+			 * requireToken()
+			 */
+			protected function requireToken()
+			{
+				if (! $this->token) {
+					throw new \LogicException('A token is required');
+				}
+			}
+
+			/**
+			 * setRequest()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return \ApiArchitect\Auth\ApiArchitectAuth
+			 */
+			public function setRequest(ServerRequestInterface $request) :  ApiArchitectAuth
+			{
+				$this->parser->setRequest($request);
+
+				return $this;
+			}
+
+			/**
+			 * Get the Manager instance.
+			 *
+			 * @return \Tymon\JWTAuth\Manager
+			 */
+			public function manager()
+			{
+				return $this->manager;
+			}
+
+			/**
+			 * parser()
+			 * @return \ApiArchitect\Auth\Contracts\JWTRequestParserContract
+			 */
+			public function parser() : JWTRequestParserContract
+			{
+				return $this->parser;
+			}
+
+			/**
+			 * Get the Payload Factory.
+			 *
+			 * @return \Tymon\JWTAuth\Factory
+			 */
+			public function factory() : Factory
+			{
+				return $this->manager->getPayloadFactory();
+			}
+
+			/**
+			 * Get the Blacklist.
+			 *
+			 * @return \Tymon\JWTAuth\Blacklist
+			 */
+			public function blacklist() : Blacklist
+			{
+				return $this->manager->getBlacklist();
+			}
+
+			/**
+			 * Magically call the JWT Manager.
+			 *
+			 * @param  string  $method
+			 * @param  array  $parameters
+			 *
+			 * @throws \BadMethodCallException
+			 *
+			 * @return mixed
+			 */
+			public function __call($method, $parameters)
+			{
+				if (method_exists($this->manager, $method)) {
+					return call_user_func_array([$this->manager, $method], $parameters);
+				}
+
+				throw new BadMethodCallException("Method [$method] does not exist.");
+			}
 		}
 	}

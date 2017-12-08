@@ -1,40 +1,54 @@
 <?php
+	declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Console\Commands;
+	namespace ApiArchitect\Auth\Console\Commands {
 
-use Illuminate\Console\Command;
-use ApiArchitect\Auth\Entities\Role;
+		use Illuminate\{
+			Console\Command
+		};
 
-class CreateRoleCommand extends Command
-{
-     /**
-     * The console command name.
-     *
-     * @var string
-     */
-    protected $signature = 'create:role {roleName}';
+		use ApiArchitect\{
+			Auth\Entities\Role
+		};
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Create a new role.';
+		/**
+		 * Class CreateRoleCommand
+		 *
+		 * @package ApiArchitect\Auth\Console\Commands
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
+		 */
+		class CreateRoleCommand extends Command
+		{
+			/**
+			 * The console command name.
+			 *
+			 * @var string
+			 */
+			protected $signature = 'create:role {roleName}';
 
-    /**
-     * Execute the console command.
-     *
-     * @return bool
-     */
-    public function fire()
-    {
-        $this->info('Creating a new role');
+			/**
+			 * The console command description.
+			 *
+			 * @var string
+			 */
+			protected $description = 'Create a new role.';
 
-        $roleEntity = new Role($this->argument('roleName'));
+			/**
+			 * fire()
+			 * @return bool
+			 */
+			public function fire() : bool
+			{
+				$this->info('Creating a new role');
 
-        $role = app()
-            ->make('em')
-            ->getRepository('\ApiArchitect\Auth\Entities\Role')
-            ->store($roleEntity);
-    }
-}
+				$roleEntity = new Role($this->argument('roleName'));
+
+				$role = app()
+					->make('em')
+					->getRepository('\ApiArchitect\Auth\Entities\Role')
+					->store($roleEntity);
+
+				return true;
+			}
+		}
+	}

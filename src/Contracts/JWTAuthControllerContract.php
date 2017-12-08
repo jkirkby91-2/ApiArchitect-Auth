@@ -1,38 +1,48 @@
 <?php
+	declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Contracts;
+	namespace ApiArchitect\Auth\Contracts {
 
-use Psr\Http\Message\ServerRequestInterface;
+		use ApiArchitect\Auth\Entities\User;
+		use Psr\{
+			Http\Message\ServerRequestInterface
+		};
+		use Zend\Diactoros\Response\JsonResponse;
 
-/**
- * Interface AuthControllerContract
- *
- * @package ApiArchitect\Auth\Contracts
- * @author James Kirkby <jkirkby91@gmail.com>
- */
-interface JWTAuthControllerContract
-{
-    /**
-     * @param ServerRequestInterface $request
-     */
-    public function authenticate(ServerRequestInterface $request);
+		/**
+		 * Interface JWTAuthControllerContract
+		 *
+		 * @package ApiArchitect\Auth\Contracts
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
+		 */
+		interface JWTAuthControllerContract
+		{
+			/**
+			 * authenticate()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return mixed
+			 */
+			public function authenticate(ServerRequestInterface $request) : JsonResponse;
 
-    /**
-     * @param ServerRequestInterface $request
-     */
-    public function logout(ServerRequestInterface $request);
+			/**
+			 * logout()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return \Zend\Diactoros\Response\JsonResponse
+			 */
+			public function logout(ServerRequestInterface $request) : JsonResponse;
 
-    /**
-     * Returns the authenticated user
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function authenticatedUser();
+			/**
+			 * authenticatedUser()
+			 * @return \Zend\Diactoros\Response\JsonResponse
+			 */
+			public function authenticatedUser() : JsonResponse;
 
-    /**
-     * Refresh the token
-     *
-     * @return mixed
-     */
-    public function getToken();
-}
+			/**
+			 * getToken()
+			 * @return \Zend\Diactoros\Response\JsonResponse
+			 */
+			public function getToken() : JsonResponse;
+		}
+	}

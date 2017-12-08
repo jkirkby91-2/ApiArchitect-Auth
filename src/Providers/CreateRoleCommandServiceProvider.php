@@ -1,33 +1,40 @@
-<?php 
+<?php
+	declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Providers;
+	namespace ApiArchitect\Auth\Providers {
 
-use Illuminate\Support\ServiceProvider;
-use ApiArchitect\Auth\Console\Commands\CreateRoleCommand;
+		use Illuminate\{
+			Support\ServiceProvider
+		};
 
-/**
- * Class CreateRoleCommandServiceProvider
- *
- * @package App\Providers
- * @author James Kirkby <jkirkby91@gmail.com>
- */
-class CreateRoleCommandServiceProvider extends ServiceProvider
-{
+		use ApiArchitect\{
+			Auth\Console\Commands\CreateRoleCommand
+		};
 
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->singleton('command.create:role', function()
-        {
-            return new CreateRoleCommand();
-        });
+		/**
+		 * Class CreateRoleCommandServiceProvider
+		 *
+		 * @package ApiArchitect\Auth\Providers
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
+		 */
+		class CreateRoleCommandServiceProvider extends ServiceProvider
+		{
 
-        $this->commands(
-            'command.create:role'
-        );
-    }
-}
+			/**
+			 * Register any application services.
+			 *
+			 * @return void
+			 */
+			public function register()
+			{
+				$this->app->singleton('command.create:role', function()
+				{
+					return new CreateRoleCommand();
+				});
+
+				$this->commands(
+					'command.create:role'
+				);
+			}
+		}
+	}

@@ -1,16 +1,22 @@
 <?php
+	declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Repositories;
+	namespace ApiArchitect\Auth\Repositories {
 
-use Jkirkby91\LumenDoctrineComponent\Repositories\LumenDoctrineEntityRepository;
+		use Jkirkby91\{
+			DoctrineRepositories\ResourceRepositoryTrait,
+			Boilers\RepositoryBoiler\ResourceRepositoryContract,
+			LumenDoctrineComponent\Repositories\LumenDoctrineEntityRepository
+		};
 
-/**
- * Class RoleRepository
- *
- * @package ApiArchitect\Auth\Repositories
- * @author James Kirkby <jkirkby91@gmail.com>
- */
-class RoleRepository extends LumenDoctrineEntityRepository implements \Jkirkby91\Boilers\RepositoryBoiler\ResourceRepositoryContract
-{
-    use \Jkirkby91\DoctrineRepositories\ResourceRepositoryTrait;
-}
+		/**
+		 * Class RoleRepository
+		 *
+		 * @package ApiArchitect\Auth\Repositories
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
+		 */
+		class RoleRepository extends LumenDoctrineEntityRepository implements ResourceRepositoryContract
+		{
+			use ResourceRepositoryTrait;
+		}
+	}

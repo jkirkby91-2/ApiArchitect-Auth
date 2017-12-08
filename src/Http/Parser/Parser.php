@@ -1,113 +1,116 @@
 <?php
+	declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Http\Parser;
+	namespace ApiArchitect\Auth\Http\Parser {
 
-use Psr\Http\Message\ServerRequestInterface;
-use ApiArchitect\Auth\Contracts\JWTRequestParserContract;
+		use Psr\{
+			Http\Message\ServerRequestInterface
+		};
 
-class Parser implements JWTRequestParserContract
-{
+		use ApiArchitect\{
+			Auth\Contracts\JWTRequestParserContract
+		};
 
-	/**
-	 * @var array
-	 */
-    private $chain;
+		class Parser implements JWTRequestParserContract
+		{
 
-	/**
-	 * @var \Illuminate\Http\Request|\Psr\Http\Message\ServerRequestInterface
-	 */
-    protected $request;
+			/**
+			 * @var array $chain
+			 */
+			private $chain;
 
-    /**
-     * @param  \Illuminate\Http\Request  $request
-     * @param  array  $chain
-     *
-     * @return void
-     */
-    public function __construct(ServerRequestInterface $request, array $chain = [])
-    {
-        $this->request = $request;
-        $this->chain = $chain;
-    }
+			/**
+			 * @var \Illuminate\Http\Request|\Psr\Http\Message\ServerRequestInterface $request
+			 */
+			protected $request;
 
-    /**
-     * Get the parser chain.
-     *
-     * @return array
-     */
-    public function getChain()
-    {
-        return $this->chain;
-    }
+			/**
+			 * Parser constructor.
+			 *
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 * @param array                                    $chain
+			 */
+			public function __construct(ServerRequestInterface $request, array $chain = [])
+			{
+				$this->request = $request;
+				$this->chain = $chain;
+			}
 
-    /**
-     * Set the order of the parser chain.
-     *
-     * @param  array  $chain
-     *
-     * @return $this
-     */
-    public function setChain(array $chain)
-    {
-        $this->chain = $chain;
-        return $this;
-    }
+			/**
+			 * getChain()
+			 * @return array
+			 */
+			public function getChain() : array
+			{
+				return $this->chain;
+			}
 
-    /**
-     * Alias for setting the order of the chain.
-     *
-     * @param  array  $chain
-     *
-     * @return $this
-     */
-    public function setChainOrder(array $chain)
-    {
-        return $this->setChain($chain);
-    }
+			/**
+			 * setChain()
+			 * @param array $chain
+			 *
+			 * @return \ApiArchitect\Auth\Contracts\JWTRequestParserContract
+			 */
+			public function setChain(array $chain) : JWTRequestParserContract
+			{
+				$this->chain = $chain;
+				return $this;
+			}
 
-	/**
-	 * parseToken()
-	 *
-	 * Iterate through the parsers and attempt to retrieve
-	 * a value, otherwise return null.
-	 *
-	 * @return mixed
-	 * @throws \Exception
-	 */
-    public function parseToken()
-    {
-		if ($this->chain === array()) {
-			throw new \Exception('No Chains');
+			/**
+			 * setChainOrder()
+			 * @param array $chain
+			 *
+			 * @return \ApiArchitect\Auth\Contracts\JWTRequestParserContract
+			 */
+			public function setChainOrder(array $chain) : JWTRequestParserContract
+			{
+				return $this->setChain($chain);
+			}
+
+			/**
+			 * parseToken()
+			 *
+			 * Iterate through the parsers and attempt to retrieve
+			 * a value, otherwise return null.
+			 *
+			 * @return mixed
+			 * @throws \Exception
+			 */
+			public function parseToken() : string
+			{
+				if ($this->chain === array()) {
+					throw new \LogicException('No Chains');
+				}
+				foreach ($this->chain as $parser) {
+					$response = $parser->parse($this->request);
+					if ($response !== null) {
+						return $response;
+					}
+				}
+			}
+
+			/**
+			 * hasToken()
+			 * @return bool
+			 * @throws \Exception
+			 */
+			public function hasToken() : bool
+			{
+				return $this->parseToken() !== null;
+			}
+
+			/**
+			 * setRequest()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return $this|\ApiArchitect\Auth\Contracts\JWTRequestParserContract
+			 */
+			public function setRequest(ServerRequestInterface $request) : JWTRequestParserContract
+			{
+				$this->request = $request;
+
+				return $this;
+			}
 		}
-        foreach ($this->chain as $parser) {
-            $response = $parser->parse($this->request);
-            if ($response !== null) {
-                return $response;
-            }
-        }
-    }
-
-    /**
-     * Check whether a token exists in the chain.
-     *
-     * @return bool
-     */
-    public function hasToken()
-    {
-        return $this->parseToken() !== null;
-    }
-
-    /**
-     * Set the request instance.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     *
-     * @return $this
-     */
-    public function setRequest(ServerRequestInterface $request)
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-}
+	}

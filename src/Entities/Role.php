@@ -1,70 +1,86 @@
 <?php
+	declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Entities;
+	namespace ApiArchitect\Auth\Entities {
 
-use Doctrine\ORM\Mapping AS ORM;
-use Gedmo\Mapping\Annotation AS Gedmo;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use LaravelDoctrine\ACL\Contracts\Role as RoleContract;
-use ApiArchitect\Compass\Entities\AbstractResourceEntity;
+		use Doctrine\{
+			ORM\Mapping as ORM, ORM\Event\LifecycleEventArgs
+		};
 
-/**
- * Class Role
- *
- * @package app\Entities
- * @author James Kirkby <jkirkby91@gmail.com>
- *
- * @Gedmo\Loggable
- * @ORM\HasLifeCycleCallbacks
- * @ORM\Entity
- * @ORM\Table(name="role", indexes={@ORM\Index(name="name_idx", columns={"name"})})
- * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\RoleRepository")
- */
-class Role extends AbstractResourceEntity implements RoleContract
-{
+		use Gedmo\{
+			Mapping\Annotation as Gedmo
+		};
 
-    /**
-     * Role constructor.
-     */
-    public function __construct($name)
-    {
-        $this->nodeType = 'Role';
-        $this->name = $name;
-    }
+		use LaravelDoctrine\{
+			ACL\Contracts\Role as RoleContract
+		};
 
-    /**
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+		use ApiArchitect\{
+			Compass\Entities\AbstractResourceEntity
+		};
 
-    /**
-     * @param $name
-     * @return $this
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
+		/**
+		 * Class Role
+		 *
+		 * @package app\Entities
+		 * @author James Kirkby <jkirkby91@gmail.com>
+		 *
+		 * @Gedmo\Loggable
+		 * @ORM\HasLifeCycleCallbacks
+		 * @ORM\Entity
+		 * @ORM\Table(name="role", indexes={@ORM\Index(name="role_name_idx", columns={"name"})})
+		 * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\RoleRepository")
+		 */
+		class Role extends AbstractResourceEntity implements RoleContract
+		{
 
-    /**
-     * @return mixed
-     */
-    public function getPermissions()
-    {
-        return $this->permission;
-    }
-    
-    /**
-     * @param string $permission
-     * @return $this
-     */
-    public function hasPermissionTo($permission)
-    {
-        $this->permission = $permission;
-        return $this;
-    }
-}
+			/**
+			 * Role constructor.
+			 *
+			 * @param $name
+			 */
+			public function __construct($name)
+			{
+				$this->nodeType = 'Role';
+				$this->name = $name;
+			}
+
+			/**
+			 * @return mixed
+			 */
+			public function getName()
+			{
+				return $this->name;
+			}
+
+			/**
+			 * setName()
+			 * @param string $name
+			 *
+			 * @return $this|\Jkirkby91\Boilers\SchemaBoilers\SchemaContract
+			 */
+			public function setName(string $name)
+			{
+				$this->name = $name;
+				return $this;
+			}
+
+			/**
+			 * @return mixed
+			 */
+			public function getPermissions()
+			{
+				return $this->permission;
+			}
+
+			/**
+			 * @param string $permission
+			 * @return $this
+			 */
+			public function hasPermissionTo($permission)
+			{
+				$this->permission = $permission;
+				return $this;
+			}
+		}
+	}

@@ -12,7 +12,7 @@ use ApiArchitect\Compass\Entities\AbstractResourceEntity;
  * @author James Kirkby <jkirkby91@gmail.com>
  *
  * @ORM\Entity
- * @ORM\Table(name="password_resets", indexes={@ORM\Index(name="token_idx", columns={"token"})})
+ * @ORM\Table(name="password_resets", indexes={@ORM\Index(name="password_resets_token_idx", columns={"token"})})
  * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\PasswordResetsRepository")
  * @ORM\HasLifeCycleCallBacks
  */

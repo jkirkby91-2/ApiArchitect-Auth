@@ -1,31 +1,43 @@
 <?php
+	declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Entities\Social;
+	namespace ApiArchitect\Auth\Entities\Social {
 
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use ApiArchitect\Compass\Entities\AbstractResourceEntity;
+		use Doctrine\{
+			ORM\Mapping as ORM
+		};
 
-/**
- * Class Provider
- *
- * @package ApiArchitect\Auth\Entities\Social
- * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\SocialAccountRepository")
- * @ORM\Table(name="provider", indexes={@ORM\Index(name="search_idx", columns={"name"})})
- * @Gedmo\Loggable
- * @ORM\HasLifecycleCallbacks
- *
- * @package ApiArchitect\Auth\Entities\Social
- * @author James Kirkby <me@jameskirkby.com>
- */
-class Provider extends AbstractResourceEntity 
-{
-    /**
-     * Provider constructor.
-     */
-    public function __construct($provider)
-    {
-        $this->nodeType = 'Provider';
-        $this->name = $provider;
-    }
-}
+		use Gedmo\{
+			Mapping\Annotation as Gedmo
+		};
+
+		use ApiArchitect\{
+			Compass\Entities\AbstractResourceEntity
+		};
+
+		/**
+		 * Class Provider
+		 *
+		 * @package ApiArchitect\Auth\Entities\Social
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
+		 *
+		 * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\SocialAccountRepository")
+		 * @ORM\Table(name="provider", indexes={@ORM\Index(name="provider_search_idx", columns={"name"})})
+		 * @Gedmo\Loggable
+		 * @ORM\HasLifecycleCallbacks
+		 */
+		class Provider extends AbstractResourceEntity
+		{
+
+			/**
+			 * Provider constructor.
+			 *
+			 * @param string $provider
+			 */
+			public function __Construct(string $provider)
+			{
+				parent::__Construct($provider);
+				$this->nodeType = 'Provider';
+			}
+		}
+	}

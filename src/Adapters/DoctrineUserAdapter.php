@@ -1,104 +1,132 @@
 <?php
+	declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Adapters;
+	namespace ApiArchitect\Auth\Adapters {
 
-use Illuminate\Hashing\BcryptHasher;
-use Doctrine\ORM\EntityNotFoundException;
-use Tymon\JWTAuth\Contracts\Providers\Auth;
-use LaravelDoctrine\ORM\Auth\DoctrineUserProvider;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+		use ApiArchitect\{
+			Auth\Entities\User,
+			Auth\Contracts\AuthContract
+		};
 
-/**
- * Class DoctrineUserAdapter
- *
- * Doctrine authentication driver for JWT Auth
- *
- * @package ApiArchitect\Auth\Adapters
- * @author  James Kirkby <jkirkby@protonmail.ch>
- */
-class DoctrineUserAdapter implements Auth
-{
+		use Illuminate\{
+			Hashing\BcryptHasher
+		};
 
-	/**
-	 * @var
-	 */
-    protected $auth;
+		use Doctrine\{
+			ORM\EntityNotFoundException
+		};
 
-	/**
-	 * @var
-	 */
-    protected $user;
+		use Jkirkby91\{
+			Boilers\RestServerBoiler\Exceptions\NotFoundHttpException
+		};
 
-	/**
-	 * @var \LaravelDoctrine\ORM\Auth\DoctrineUserProvider
-	 */
-    protected $doctrineUserProvider;
+		use LaravelDoctrine\{
+			ORM\Auth\DoctrineUserProvider
+		};
 
-    /**
-     * DoctrineUserAdapter constructor.
-     *
-     * @param DoctrineUserProvider $doctrineUserProvider
-     */
-    public function __construct(DoctrineUserProvider $doctrineUserProvider)
-    {
-        $this->doctrineUserProvider = $doctrineUserProvider;
-    }
+		use Symfony\{
+			Component\HttpKernel\Exception\UnauthorizedHttpException
+		};
 
-    /**
-     * @param array $credentials
-     * @return bool|\Illuminate\Contracts\Auth\Authenticatable|null
-     */
-    public function byCredentials(array $credentials)
-    {
-        //try get a user
-        $authTarget = $this->ifFound($this->doctrineUserProvider->retrieveByCredentials($credentials));
+		/**
+		 * Class DoctrineUserAdapter
+		 *
+		 * Doctrine authentication driver for JWT Auth
+		 *
+		 * @package ApiArchitect\Auth\Adapters
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
+		 */
+		class DoctrineUserAdapter implements AuthContract
+		{
 
-        //validate found user
-        if($this->doctrineUserProvider->validateCredentials($authTarget,$credentials) === true){
-            return $this->ifFound($authTarget);
-        } else {
-            return false;
-        }
-    }
+			/**
+			 * @var
+			 */
+			protected $auth;
 
-	/**
-	 * byId()
-	 * @param mixed $id
-	 *
-	 * @return mixed
-	 */
-    public function byId($id)
-    {
-		return $this->ifFound($this->doctrineUserProvider->retrieveById($id));
+			/**
+			 * @var User $user
+			 */
+			protected $user;
+
+			/**
+			 * @var \LaravelDoctrine\ORM\Auth\DoctrineUserProvider $doctrineUserProvider
+			 */
+			protected $doctrineUserProvider;
+
+			/**
+			 * DoctrineUserAdapter constructor.
+			 *
+			 * @param DoctrineUserProvider $doctrineUserProvider
+			 */
+			public function __construct(DoctrineUserProvider $doctrineUserProvider)
+			{
+				$this->doctrineUserProvider = $doctrineUserProvider;
+			}
+
+			/**
+			 * byCredentials()
+			 * @param array $credentials
+			 *
+			 * @return \ApiArchitect\Auth\Entities\User
+			 */
+			public function byCredentials(array $credentials) : User
+			{
+				//try get a user
+				$authTarget = $this->ifFound($this->doctrineUserProvider->retrieveByCredentials($credentials));
+
+				//validate found user
+				if ($this->doctrineUserProvider->validateCredentials($authTarget,$credentials) === true){
+					return $authTarget;
+				} else {
+					throw new NotFoundHttpException;
+				}
+			}
+
+			/**
+			 * byId()
+			 * @param int $id
+			 *
+			 * @return \ApiArchitect\Auth\Entities\User
+			 */
+			public function byId(int $id) : User
+			{
+				$authTarget = $this->ifFound($this->doctrineUserProvider->retrieveById($id));
+
+				if ($authTarget instanceof User) {
+					return $authTarget;
+				} else {
+					throw new NotFoundHttpException;
+				}
+			}
+
+			/**
+			 * user()
+			 * @return \ApiArchitect\Auth\Entities\User
+			 */
+			public function user() : User
+			{
+				return $this->user;
+			}
+
+			/**
+			 * ifFound()
+			 * @param \ApiArchitect\Auth\Entities\User $user
+			 *
+			 * @return \ApiArchitect\Auth\Entities\User
+			 */
+			private function ifFound(User $user) : User
+			{
+				if (is_null($user) || !is_a($user, 'ApiArchitect\Auth\Entities\User')) {
+					throw new NotFoundHttpException();
+				} else {
+					if ($user->getEnabled() != false) {
+						$this->user = $user;
+						return $this->user;
+					} else {
+						throw new UnauthorizedHttpException('User Account Has Been Banned');
+					}
+				}
+			}
+		}
 	}
-
-	/**
-	 * user()
-	 * @return mixed
-	 */
-    public function user()
-    {
-        return $this->user;
-    }
-
-	/**
-	 * ifFound()
-	 * @param \ApiArchitect\Auth\Entities\User $user
-	 *
-	 * @return \ApiArchitect\Auth\Entities\User
-	 * @throws \Doctrine\ORM\EntityNotFoundException
-	 */
-    private function ifFound(\ApiArchitect\Auth\Entities\User $user)
-    {
-        if (is_null($user) || !is_a($user, 'ApiArchitect\Auth\Entities\User')) {
-            throw new EntityNotFoundException;
-        } else {
-            if ($user->getEnabled() != false) {
-            	$this->user = $user;
-                return $user;
-            } else {
-                throw new UnauthorizedHttpException('User Account Has Been Banned');
-            }
-        }
-    }
-}

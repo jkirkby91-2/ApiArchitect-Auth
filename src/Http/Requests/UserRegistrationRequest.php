@@ -1,50 +1,63 @@
 <?php
+	declare(strict_types=1);
 
-	namespace ApiArchitect\Auth\Http\Requests;
+	namespace ApiArchitect\Auth\Http\Requests {
 
-	use Psr\Http\Message\ServerRequestInterface;
-	use ApiArchitect\Compass\Http\Requests\AbstractValidateRequest;
-	use Jkirkby91\Boilers\RestServerBoiler\Exceptions\UnprocessableEntityException;
-
-	/**
-	 * Class UserRegistrationRequest
-	 *
-	 * @package ApiArchitect\Auth\Http\Requests
-	 * @author  James Kirkby <jkirkby@protonmail.ch>
-	 */
-	class UserRegistrationRequest extends AbstractValidateRequest
-	{
+		use Psr\{
+			Http\Message\ServerRequestInterface
+		};
+		
+		use ApiArchitect\{
+			Compass\Http\Requests\AbstractValidateRequest
+		};
+		
+		use Jkirkby91\{
+			Boilers\RestServerBoiler\Exceptions\UnprocessableEntityException
+		};
 
 		/**
-		 * rules()
-		 * @param \Psr\Http\Message\ServerRequestInterface $request
+		 * Class UserRegistrationRequest
 		 *
-		 * @return array
+		 * @package ApiArchitect\Auth\Http\Requests
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
 		 */
-		public function rules(ServerRequestInterface $request) : array
+		class UserRegistrationRequest extends AbstractValidateRequest
 		{
-			$userRegDetails = $request->getParsedBody();
 
-			if ($userRegDetails['password'] !== $userRegDetails['passwordConfirm']) {
-				throw new UnprocessableEntityException;
-			}
+			/**
+			 * rules()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return array
+			 */
+			public function rules(ServerRequestInterface $request) : array
+			{
+				$userRegDetails = $request->getParsedBody();
 
-			if (!array_key_exists('role', $userRegDetails)) {
-				throw new UnprocessableEntityException('No user role for registration specified');
-			} else {
-				if (in_array($userRegDetails['role'], array('admin','administrator','superadministrator'))){
-					throw new UnprocessableEntityException('Un-authorised role type');
+				if ($userRegDetails['password'] !== $userRegDetails['passwordConfirm']) {
+					throw new UnprocessableEntityException;
 				}
-			}
 
-			return [
-				'POST' => [
-					'name' => 'required|max:255',
-					'email' => 'required|email|max:255|unique:ApiArchitect\Auth\Entities\User,email',
-					'username' => 'required|max:255|unique:ApiArchitect\Auth\Entities\User,username',
-					'password' => 'required|min:8',
-					'role'    => 'required|exists:ApiArchitect\Auth\Entities\Role,name'
-				]
-			];
+				if (!array_key_exists('role', $userRegDetails)) {
+					throw new UnprocessableEntityException('No user role for registration specified');
+				} else {
+					if (in_array($userRegDetails['role'], array('admin','administrator','superadministrator'))){
+						throw new UnprocessableEntityException('Un-authorised role type');
+					}
+				}
+
+				return [
+					'POST' => [
+						'firstName' => 'required|max:255',
+						'lastName' => 'required|max:255',
+						'email' => 'required|email|max:255|unique:ApiArchitect\Auth\Entities\User,email',
+						'username' => 'required|max:255|unique:ApiArchitect\Auth\Entities\User,username',
+						'password' => 'required|min:6',
+						'passwordConfirm' => 'required|min:6',
+						'role'    => 'required|exists:ApiArchitect\Auth\Entities\Role,name'
+					]
+				];
+			}
 		}
 	}
+	

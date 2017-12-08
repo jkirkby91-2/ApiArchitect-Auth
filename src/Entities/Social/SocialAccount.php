@@ -1,129 +1,138 @@
 <?php
+	declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Entities\Social;
+	namespace ApiArchitect\Auth\Entities\Social {
 
-use Doctrine\ORM\Mapping as ORM;
-use ApiArchitect\Auth\Entities\User;
-use Gedmo\Mapping\Annotation as Gedmo;
-use ApiArchitect\Compass\Entities\AbstractResourceEntity;
-use ApiArchitect\Auth\Entities\Social\Provider;
-use Doctrine\Common\Collections\ArrayCollection;
+		use Doctrine\{
+			ORM\Mapping as ORM, Common\Collections\ArrayCollection
+		};
 
-/**
- * Class Provider
- *
- * @package ApiArchitect\Auth\Entities\Social
- * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\SocialAccountRepository")
- * @ORM\Table(name="social_account", indexes={@ORM\Index(name="search_idx", columns={"name"})})
- * @Gedmo\Loggable
- * @ORM\HasLifecycleCallbacks
- *
- * @package ApiArchitect\Auth\Entities\Social
- * @author James Kirkby <me@jameskirkby.com>
- */
-class SocialAccount extends AbstractResourceEntity 
-{
+		use ApiArchitect\{
+			Auth\Entities\User,
+			Compass\Entities\AbstractResourceEntity,
+			Auth\Entities\Social\Provider
+		};
 
-  /**
-   * @var ArrayCollection
-   * @ORM\ManyToOne(targetEntity="ApiArchitect\Auth\Entities\Social\Provider", cascade={"all"}, fetch="EXTRA_LAZY")
-   */
-  protected $provider;
+		use Gedmo\{
+			Mapping\Annotation as Gedmo
+		};
 
-  /**
-   * @ORM\Column(type="string", unique=false, nullable=true)
-   */
-  protected $providerUid;
+		/**
+		 * Class SocialAccount
+		 *
+		 * @package ApiArchitect\Auth\Entities\Social
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
+		 *
+		 * @package ApiArchitect\Auth\Entities\Social
+		 * @ORM\Entity(repositoryClass="ApiArchitect\Auth\Repositories\SocialAccountRepository")
+		 * @ORM\Table(name="social_account", indexes={@ORM\Index(name="social_account_search_idx", columns={"name"})})
+		 * @Gedmo\Loggable
+		 * @ORM\HasLifecycleCallbacks
+		 */
+		class SocialAccount extends AbstractResourceEntity
+		{
 
-  /**
-   * @var \Doctrine\Common\Collections\Collection|User[]
-   *
-   * @ORM\ManyToMany(targetEntity="ApiArchitect\Auth\Entities\User", mappedBy="socialAccounts", cascade={"all"}, fetch="EXTRA_LAZY")
-   */
-  protected $user;
+			/**
+			 * @var ArrayCollection
+			 * @ORM\ManyToOne(targetEntity="ApiArchitect\Auth\Entities\Social\Provider", cascade={"all"}, fetch="EXTRA_LAZY")
+			 */
+			protected $provider;
 
-  /**
-   * Provider constructor.
-   */
-  public function __construct(Provider $provider, $oauthUser)
-  {
-    $this->name = md5($provider->getId().$oauthUser->getId());
-    $this->nodeType = 'SocialAccount';
-    $this->provider = $provider;
-    $this->providerUid = $oauthUser->getId();
-    $this->user = new ArrayCollection();
-  }
+			/**
+			 * @ORM\Column(type="string", unique=false, nullable=true)
+			 */
+			protected $providerUid;
 
-  /**
-   * Gets the value of provider.
-   *
-   * @return mixed
-   */
-  public function getProvider()
-  {
-      return $this->provider;
-  }
+			/**
+			 * @var \Doctrine\Common\Collections\Collection|User[]
+			 *
+			 * @ORM\ManyToMany(targetEntity="ApiArchitect\Auth\Entities\User", mappedBy="socialAccounts", cascade={"all"}, fetch="EXTRA_LAZY")
+			 */
+			protected $user;
 
-  /**
-   * Sets the value of provider.
-   *
-   * @param mixed $provider the provider
-   *
-   * @return self
-   */
-  public function setProvider($provider)
-  {
-      $this->provider = $provider;
+			/**
+			 * SocialAccount constructor.
+			 *
+			 * @param \ApiArchitect\Auth\Entities\Social\Provider $provider
+			 * @param \ApiArchitect\Auth\Entities\User            $oauthUser
+			 */
+			public function __Construct(Provider $provider,User $oauthUser)
+			{
+				parent::__Construct(md5($provider->getId().$oauthUser->getId()));
+				$this->provider = $provider;
+				$this->nodeType = 'SocialAccount';
+				$this->user = new ArrayCollection();
+				$this->providerUid = $oauthUser->getId();
+			}
 
-      return $this;
-  }
+			/**
+			 * getProvider()
+			 * @return \ApiArchitect\Auth\Entities\Social\Provider
+			 */
+			public function getProvider() : Provider
+			{
+				return $this->provider;
+			}
 
-  /**
-   * Gets the value of providerId.
-   *
-   * @return mixed
-   */
-  public function getProviderId()
-  {
-      return $this->providerUid;
-  }
+			/**
+			 * setProvider()
+			 * @param \ApiArchitect\Auth\Entities\Social\Provider $provider
+			 *
+			 * @return \ApiArchitect\Auth\Entities\Social\SocialAccount
+			 */
+			public function setProvider(Provider $provider) : SocialAccount
+			{
+				$this->provider = $provider;
 
-  /**
-   * Sets the value of providerId.
-   *
-   * @param mixed $providerId the provider id
-   *
-   * @return self
-   */
-  public function setProviderId($providerId)
-  {
-      $this->providerUid = $providerId;
+				return $this;
+			}
 
-      return $this;
-  }
+			/**
+			 * getProviderId()
+			 * @return int
+			 */
+			public function getProviderId() : int
+			{
+				return $this->providerUid;
+			}
 
-  /**
-   * @param User $user
-   */
-  public function addUser(User $user)
-  {
-    if ($this->user->contains($user)) {
-        return;
-    }
-    $this->user->add($user);
-    $user->addSocialAccount($this);
-  }
+			/**
+			 * setProviderId()
+			 * @param int $providerId
+			 *
+			 * @return \ApiArchitect\Auth\Entities\Social\SocialAccount
+			 */
+			public function setProviderId(int $providerId) : SocialAccount
+			{
+				$this->providerUid = $providerId;
 
-  /**
-   * @param User $user
-   */
-  public function removeUser(User $user)
-  {
-    if (!$this->user->contains($user)) {
-        return;
-    }
-    $this->user->removeElement($user);
-    $user->removeSocialAccount($this);
-  }
+				return $this;
+			}
 
-}
+			/**
+			 * addUser()
+			 * @param \ApiArchitect\Auth\Entities\User $user
+			 */
+			public function addUser(User $user)
+			{
+				if ($this->user->contains($user)) {
+					return;
+				}
+				$this->user->add($user);
+				$user->addSocialAccount($this);
+			}
+
+			/**
+			 * removeUser()
+			 * @param \ApiArchitect\Auth\Entities\User $user
+			 */
+			public function removeUser(User $user)
+			{
+				if (!$this->user->contains($user)) {
+					return;
+				}
+				$this->user->removeElement($user);
+				$user->removeSocialAccount($this);
+			}
+		}
+	}

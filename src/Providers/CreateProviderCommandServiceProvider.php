@@ -1,33 +1,40 @@
-<?php 
+<?php
+	declare(strict_types=1);
 
-namespace ApiArchitect\Auth\Providers;
+	namespace ApiArchitect\Auth\Providers {
 
-use Illuminate\Support\ServiceProvider;
-use ApiArchitect\Auth\Console\Commands\CreateProviderCommand;
+		use Illuminate\{
+			Support\ServiceProvider
+		};
 
-/**
- * Class CreateProviderCommandServiceProvider
- *
- * @package App\Providers
- * @author James Kirkby <jkirkby91@gmail.com>
- */
-class CreateProviderCommandServiceProvider extends ServiceProvider
-{
+		use ApiArchitect\{
+			Auth\Console\Commands\CreateProviderCommand
+		};
 
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->singleton('command.create:provider', function()
-        {
-            return new CreateProviderCommand();
-        });
+		/**
+		 * Class CreateProviderCommandServiceProvider
+		 *
+		 * @package ApiArchitect\Auth\Providers
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
+		 */
+		class CreateProviderCommandServiceProvider extends ServiceProvider
+		{
 
-        $this->commands(
-            'command.create:provider'
-        );
-    }
-}
+			/**
+			 * Register any application services.
+			 *
+			 * @return void
+			 */
+			public function register()
+			{
+				$this->app->singleton('command.create:provider', function()
+				{
+					return new CreateProviderCommand();
+				});
+
+				$this->commands(
+					'command.create:provider'
+				);
+			}
+		}
+	}

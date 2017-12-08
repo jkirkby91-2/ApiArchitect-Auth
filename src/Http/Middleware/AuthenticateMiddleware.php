@@ -1,93 +1,103 @@
 <?php
+	declare(strict_types=1);
 
-	namespace ApiArchitect\Auth\Http\Middleware;
+	namespace ApiArchitect\Auth\Http\Middleware {
 
-	use ApiArchitect\Auth\ApiArchitectAuth;
-	use Closure;
-	use Tymon\JWTAuth\JWTAuth;
-	use ApiArchitect\Auth\Http\Parser\Parser;
-	use Tymon\JWTAuth\Exceptions\JWTException;
-	use Psr\Http\Message\ServerRequestInterface;
-	use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-	use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-	use ApiArchitect\Compass\Http\Middleware\AbstractMiddleware;
+		use ApiArchitect\{
+			Auth\ApiArchitectAuth, Auth\Entities\User, Auth\Http\Parser\Parser, Compass\Http\Middleware\AbstractMiddleware
+		};
 
-	/**
-	 * Class AuthenticateMiddleware
-	 * @package ApiArchitect\Auth\Http\Middleware
-	 */
-	class AuthenticateMiddleware extends AbstractMiddleware
-	{
+		use Closure;
 
-		/**
-		 * @var \ApiArchitect\Auth\ApiArchitectAuth|\ApiArchitect\Auth\Http\Middleware\Guard
-		 */
-		protected $auth;
+		use Tymon\{
+			JWTAuth\Exceptions\JWTException
+		};
+
+		use Psr\{
+			Http\Message\ServerRequestInterface
+		};
+
+		use Symfony\{
+			Component\HttpKernel\Exception\BadRequestHttpException,
+			Component\HttpKernel\Exception\UnauthorizedHttpException
+		};
 
 		/**
-		 * @var
+		 * Class AuthenticateMiddleware
+		 *
+		 * @package ApiArchitect\Auth\Http\Middleware
+		 * @author  James Kirkby <jkirkby@protonmail.ch>
 		 */
-		protected $user;
-
-		/**
-		 * Authenticate constructor.
-		 * @param Guard $auth
-		 */
-		public function __construct(ApiArchitectAuth $auth)
+		class AuthenticateMiddleware extends AbstractMiddleware
 		{
-			$this->auth = $auth;
-		}
 
-		/**
-		 * Handle an incoming request.
-		 *
-		 * @param  \Illuminate\Http\Request  $request
-		 * @param  \Closure  $next
-		 * @return mixed
-		 */
-		public function handle(ServerRequestInterface $request, Closure $next)
-		{
-			$this->user = $this->authenticate($request);
+			/**
+			 * @var \ApiArchitect\Auth\ApiArchitectAuth|\ApiArchitect\Auth\Http\Middleware\Guard $auth
+			 */
+			protected $auth;
 
-			return $next($request);
-		}
+			/**
+			 * @var \ApiArchitect\Auth\Entities\User $user
+			 */
+			protected $user;
 
-		/**
-		 * Check the request for the presence of a token.
-		 *
-		 * @param  \Illuminate\Http\Request  $request
-		 *
-		 * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
-		 *
-		 * @return void
-		 */
-		public function checkForToken(ServerRequestInterface $request)
-		{
-			if (! $this->auth->getParser()->setRequest($request)->hasToken()) {
-				throw new BadRequestHttpException('Token not provided');
+			/**
+			 * AuthenticateMiddleware constructor.
+			 *
+			 * @param \ApiArchitect\Auth\ApiArchitectAuth $auth
+			 */
+			public function __construct(ApiArchitectAuth $auth)
+			{
+				$this->auth = $auth;
 			}
-		}
 
-		/**
-		 * authenticate()
-		 *
-		 * Attempt to authenticate a user via the token in the request.
-		 *
-		 * @param \Psr\Http\Message\ServerRequestInterface $request
-		 *
-		 * @return mixed
-		 */
-		public function authenticate(ServerRequestInterface $request)
-		{
-			$this->checkForToken($request);
+			/**
+			 * handle()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 * @param \Closure                                 $next
+			 *
+			 * @return \Closure
+			 */
+			public function handle(ServerRequestInterface $request, Closure $next) : Closure
+			{
+				$this->user = $this->authenticate($request);
 
-			$payload = $this->auth->getManager()
-				->getJWTProvider()->decode($this->auth->getParser()->parseToken());
+				return $next($request);
+			}
 
-			try {
-				return $this->auth->getProvider()->byId($payload['sub']);
-			} catch (JWTException $e) {
-				throw new UnauthorizedHttpException('ApiArchitect.Auth', $e->getMessage(), $e, $e->getCode());
+			/**
+			 * checkForToken()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return bool
+			 */
+			public function checkForToken(ServerRequestInterface $request) : bool
+			{
+				if (! $this->auth->getParser()->setRequest($request)->hasToken()) {
+					throw new BadRequestHttpException('Token not provided');
+				}
+
+				return true;
+			}
+
+			/**
+			 * authenticate()
+			 * @param \Psr\Http\Message\ServerRequestInterface $request
+			 *
+			 * @return \ApiArchitect\Auth\Entities\User
+			 */
+			public function authenticate(ServerRequestInterface $request) : User
+			{
+				$this->checkForToken($request);
+
+				$payload = $this->auth->getManager()
+					->getJWTProvider()->decode($this->auth->getParser()->parseToken());
+
+				try {
+					return $this->auth->getProvider()->byId($payload['sub']);
+				} catch (JWTException $e) {
+					throw new UnauthorizedHttpException('ApiArchitect.Auth', $e->getMessage(), $e, $e->getCode());
+				}
 			}
 		}
 	}
